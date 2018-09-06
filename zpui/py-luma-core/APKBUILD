@@ -1,0 +1,51 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgbase=luma.core
+pkgname=py-luma-core
+pkgver=1.7.2
+pkgrel=0
+pkgdesc="Library providing a canvas and functionality to support drawing primitives and text-rendering capabilities for small displays"
+arch="armhf" # Because of rpigpio
+url="https://luma-oled.readthedocs.io/"
+license="MIT"
+depends="py-smbus2 py-pillow py-rpio py-spidev"
+makedepends="py-setuptools python2-dev python3-dev
+	pytest pytest-cov py-rpio py-pbr py-coverage py-mock py-smbus2 py-pillow py-spidev py2-monotonic linux-headers"
+# Last row of $makedepends are only required for the tests
+source="$pkgname-$pkgver.tar.gz::https://github.com/rm-hull/$pkgbase/archive/$pkgver.tar.gz"
+subpackages="py2-${pkgname/py-/}:_py2 py3-${pkgname/py-/}:_py3"
+options="!check" # Broken
+builddir="$srcdir/$pkgbase-$pkgver"
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+	python setup.py test
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="19b38e8451c843e7acae045233351b68e20f3bd053b30aba5d782c9d488e5f3fe199b7d12834711dc788c6db4686263e3cee433fdb80c07db02f52f08ae60549  py-luma-core-1.7.2.tar.gz"

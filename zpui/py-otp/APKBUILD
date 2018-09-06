@@ -1,0 +1,48 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgbase=pyotp
+pkgname=py-otp
+pkgver=2.2.6
+pkgrel=0
+pkgdesc="A python module for interfacing with SPI devices from user space via the spidev linux kernel driver"
+arch="noarch"
+url="https://pyotp.readthedocs.io/"
+license="MIT"
+depends=""
+makedepends="py-setuptools python2-dev python3-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/pyotp/$pkgbase/archive/v$pkgver.tar.gz"
+subpackages="py2-${pkgname/py-/}:_py2 py3-${pkgname/py-/}:_py3"
+builddir="$srcdir/$pkgbase-$pkgver"
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+	python setup.py test
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="c21f98f531fea30da02aac85f0f8f161b79a3e94381a02d6fa6575b2d9de1da55b0a19ee6a71b594e76881bb77521e9d0bb8a6cc604ef5815a1103fbef57d1d1  py-otp-2.2.6.tar.gz"

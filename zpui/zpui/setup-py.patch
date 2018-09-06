@@ -1,0 +1,1362 @@
+diff --git a/MANIFEST.in b/MANIFEST.in
+new file mode 100644
+index 0000000..a3eaa57
+--- /dev/null
++++ b/MANIFEST.in
+@@ -0,0 +1 @@
++ include default_config.json
+diff --git a/apps/example_apps/char_arrow_input/do_not_load b/apps/example_apps/char_arrow_input/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/checkbox_test/do_not_load b/apps/example_apps/checkbox_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/class_based_skeleton/do_not_load b/apps/example_apps/class_based_skeleton/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/dialog_test/do_not_load b/apps/example_apps/dialog_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/do_not_load b/apps/example_apps/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/ffs_test/do_not_load b/apps/example_apps/ffs_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/fire_detector/do_not_load b/apps/example_apps/fire_detector/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/listbox_test/do_not_load b/apps/example_apps/listbox_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/menu_dynupdate_test/do_not_load b/apps/example_apps/menu_dynupdate_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/number_input/do_not_load b/apps/example_apps/number_input/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/numpad_input/do_not_load b/apps/example_apps/numpad_input/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/refresher/do_not_load b/apps/example_apps/refresher/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/sandbox/do_not_load b/apps/example_apps/sandbox/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/scrolling_test/do_not_load b/apps/example_apps/scrolling_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/skeleton/do_not_load b/apps/example_apps/skeleton/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/streaming_test/do_not_load b/apps/example_apps/streaming_test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/example_apps/test/do_not_load b/apps/example_apps/test/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/hardware_apps/status/do_not_load b/apps/hardware_apps/status/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/hardware_apps/thermo/do_not_load b/apps/hardware_apps/thermo/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/main_screen/do_not_load b/apps/main_screen/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/personal/contacts/do_not_load b/apps/personal/contacts/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/personal/lecture_helper/do_not_load b/apps/personal/lecture_helper/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/personal/todo_txt/do_not_load b/apps/personal/todo_txt/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/privacy_apps/do_not_load b/apps/privacy_apps/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/apps/privacy_apps/tor/do_not_load b/apps/privacy_apps/tor/do_not_load
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/setup.py b/setup.py
+new file mode 100644
+index 0000000..ce36cc3
+--- /dev/null
++++ b/setup.py
+@@ -0,0 +1,54 @@
++#!/usr/bin/env python
++import os
++from setuptools import setup, find_packages
++
++def read(fname):
++    return open(os.path.join(os.path.dirname(__file__), fname)).read()
++
++setup(
++    name = "ZPUI",
++    version = "0.0.1",
++    description = ("Official ZeroPhone UI framework, based on pyLCI"),
++    license = "Apache",
++    keywords = "zpui zerophone",
++    url = "http://zpui.rtfd.org",
++    long_description = read('README.md'),
++    packages = find_packages(),
++    install_requires = [
++		'luma.oled',
++		'python-nmap',
++		'smspdu',
++		'zerophone_hw>=0.3.0',
++		'gpio',
++		'vobject',
++		'pytest',
++		'mock',
++		'pydbus',
++		'pyotp',
++		'jsonrpclib',
++		'smbus2',
++		'pygame',
++		'serial',
++		'pygobject',
++	],
++    classifiers = [
++        "Development Status :: 1 - Planning",
++        "Development Status :: 2 - Pre-Alpha",
++        "Development Status :: 3 - Alpha",
++        "Environment :: Other Environment",
++        "Intended Audience :: End Users/Desktop",
++        "License :: OSI Approved :: Apache Software License",
++        "Natural Language :: English",
++        "Operating System :: POSIX :: Linux",
++        "Programming Language :: Python :: 2",
++        "Programming Language :: Python :: 2.7",
++        "Topic :: Desktop Environment :: Window Managers",
++        "Topic :: System :: System Shells"
++    ],
++	include_package_data = True,
++	entry_points = {
++		'gui_scripts': [
++			'zpui = zpui.main:init',
++		],
++	}
++)
+diff --git a/__init__.py b/zpui/__init__.py
+similarity index 100%
+rename from __init__.py
+rename to zpui/__init__.py
+diff --git a/apps/__init__.py b/zpui/apps/__init__.py
+similarity index 100%
+rename from apps/__init__.py
+rename to zpui/apps/__init__.py
+diff --git a/apps/app_manager.py b/zpui/apps/app_manager.py
+similarity index 100%
+rename from apps/app_manager.py
+rename to zpui/apps/app_manager.py
+diff --git a/apps/clock/__init__.py b/zpui/apps/clock/__init__.py
+similarity index 100%
+rename from apps/clock/__init__.py
+rename to zpui/apps/clock/__init__.py
+diff --git a/apps/clock/main.py b/zpui/apps/clock/main.py
+similarity index 100%
+rename from apps/clock/main.py
+rename to zpui/apps/clock/main.py
+diff --git a/apps/example_apps/__init__.py b/zpui/apps/example_apps/__init__.py
+similarity index 100%
+rename from apps/example_apps/__init__.py
+rename to zpui/apps/example_apps/__init__.py
+diff --git a/apps/example_apps/char_arrow_input/__init__.py b/zpui/apps/example_apps/char_arrow_input/__init__.py
+similarity index 100%
+rename from apps/example_apps/char_arrow_input/__init__.py
+rename to zpui/apps/example_apps/char_arrow_input/__init__.py
+diff --git a/apps/example_apps/char_arrow_input/main.py b/zpui/apps/example_apps/char_arrow_input/main.py
+similarity index 100%
+rename from apps/example_apps/char_arrow_input/main.py
+rename to zpui/apps/example_apps/char_arrow_input/main.py
+diff --git a/apps/example_apps/checkbox_test/__init__.py b/zpui/apps/example_apps/checkbox_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/checkbox_test/__init__.py
+rename to zpui/apps/example_apps/checkbox_test/__init__.py
+diff --git a/apps/example_apps/checkbox_test/main.py b/zpui/apps/example_apps/checkbox_test/main.py
+similarity index 100%
+rename from apps/example_apps/checkbox_test/main.py
+rename to zpui/apps/example_apps/checkbox_test/main.py
+diff --git a/apps/example_apps/class_based_skeleton/__init__.py b/zpui/apps/example_apps/class_based_skeleton/__init__.py
+similarity index 100%
+rename from apps/example_apps/class_based_skeleton/__init__.py
+rename to zpui/apps/example_apps/class_based_skeleton/__init__.py
+diff --git a/apps/example_apps/class_based_skeleton/main.py b/zpui/apps/example_apps/class_based_skeleton/main.py
+similarity index 100%
+rename from apps/example_apps/class_based_skeleton/main.py
+rename to zpui/apps/example_apps/class_based_skeleton/main.py
+diff --git a/apps/example_apps/dialog_test/__init__.py b/zpui/apps/example_apps/dialog_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/dialog_test/__init__.py
+rename to zpui/apps/example_apps/dialog_test/__init__.py
+diff --git a/apps/example_apps/dialog_test/main.py b/zpui/apps/example_apps/dialog_test/main.py
+similarity index 100%
+rename from apps/example_apps/dialog_test/main.py
+rename to zpui/apps/example_apps/dialog_test/main.py
+diff --git a/apps/example_apps/ffs_test/__init__.py b/zpui/apps/example_apps/ffs_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/ffs_test/__init__.py
+rename to zpui/apps/example_apps/ffs_test/__init__.py
+diff --git a/apps/example_apps/ffs_test/main.py b/zpui/apps/example_apps/ffs_test/main.py
+similarity index 100%
+rename from apps/example_apps/ffs_test/main.py
+rename to zpui/apps/example_apps/ffs_test/main.py
+diff --git a/apps/example_apps/fire_detector/__init__.py b/zpui/apps/example_apps/fire_detector/__init__.py
+similarity index 100%
+rename from apps/example_apps/fire_detector/__init__.py
+rename to zpui/apps/example_apps/fire_detector/__init__.py
+diff --git a/apps/example_apps/fire_detector/fire.png b/zpui/apps/example_apps/fire_detector/fire.png
+similarity index 100%
+rename from apps/example_apps/fire_detector/fire.png
+rename to zpui/apps/example_apps/fire_detector/fire.png
+diff --git a/apps/example_apps/fire_detector/main.py b/zpui/apps/example_apps/fire_detector/main.py
+similarity index 100%
+rename from apps/example_apps/fire_detector/main.py
+rename to zpui/apps/example_apps/fire_detector/main.py
+diff --git a/apps/example_apps/fire_detector/no_fire.png b/zpui/apps/example_apps/fire_detector/no_fire.png
+similarity index 100%
+rename from apps/example_apps/fire_detector/no_fire.png
+rename to zpui/apps/example_apps/fire_detector/no_fire.png
+diff --git a/apps/example_apps/listbox_test/__init__.py b/zpui/apps/example_apps/listbox_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/listbox_test/__init__.py
+rename to zpui/apps/example_apps/listbox_test/__init__.py
+diff --git a/apps/example_apps/listbox_test/main.py b/zpui/apps/example_apps/listbox_test/main.py
+similarity index 100%
+rename from apps/example_apps/listbox_test/main.py
+rename to zpui/apps/example_apps/listbox_test/main.py
+diff --git a/apps/example_apps/loadingbar_test_app/__init__.py b/zpui/apps/example_apps/loadingbar_test_app/__init__.py
+similarity index 100%
+rename from apps/example_apps/loadingbar_test_app/__init__.py
+rename to zpui/apps/example_apps/loadingbar_test_app/__init__.py
+diff --git a/apps/example_apps/loadingbar_test_app/main.py b/zpui/apps/example_apps/loadingbar_test_app/main.py
+similarity index 100%
+rename from apps/example_apps/loadingbar_test_app/main.py
+rename to zpui/apps/example_apps/loadingbar_test_app/main.py
+diff --git a/apps/example_apps/menu_arrow_test/__init__.py b/zpui/apps/example_apps/menu_arrow_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/menu_arrow_test/__init__.py
+rename to zpui/apps/example_apps/menu_arrow_test/__init__.py
+diff --git a/apps/example_apps/menu_arrow_test/main.py b/zpui/apps/example_apps/menu_arrow_test/main.py
+similarity index 100%
+rename from apps/example_apps/menu_arrow_test/main.py
+rename to zpui/apps/example_apps/menu_arrow_test/main.py
+diff --git a/apps/example_apps/menu_dynupdate_test/__init__.py b/zpui/apps/example_apps/menu_dynupdate_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/menu_dynupdate_test/__init__.py
+rename to zpui/apps/example_apps/menu_dynupdate_test/__init__.py
+diff --git a/apps/example_apps/menu_dynupdate_test/main.py b/zpui/apps/example_apps/menu_dynupdate_test/main.py
+similarity index 100%
+rename from apps/example_apps/menu_dynupdate_test/main.py
+rename to zpui/apps/example_apps/menu_dynupdate_test/main.py
+diff --git a/apps/example_apps/number_input/__init__.py b/zpui/apps/example_apps/number_input/__init__.py
+similarity index 100%
+rename from apps/example_apps/number_input/__init__.py
+rename to zpui/apps/example_apps/number_input/__init__.py
+diff --git a/apps/example_apps/number_input/main.py b/zpui/apps/example_apps/number_input/main.py
+similarity index 100%
+rename from apps/example_apps/number_input/main.py
+rename to zpui/apps/example_apps/number_input/main.py
+diff --git a/apps/example_apps/numbered_input_menu_test/__init__.py b/zpui/apps/example_apps/numbered_input_menu_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/numbered_input_menu_test/__init__.py
+rename to zpui/apps/example_apps/numbered_input_menu_test/__init__.py
+diff --git a/apps/example_apps/numbered_input_menu_test/main.py b/zpui/apps/example_apps/numbered_input_menu_test/main.py
+similarity index 100%
+rename from apps/example_apps/numbered_input_menu_test/main.py
+rename to zpui/apps/example_apps/numbered_input_menu_test/main.py
+diff --git a/apps/example_apps/numpad_input/__init__.py b/zpui/apps/example_apps/numpad_input/__init__.py
+similarity index 100%
+rename from apps/example_apps/numpad_input/__init__.py
+rename to zpui/apps/example_apps/numpad_input/__init__.py
+diff --git a/apps/example_apps/numpad_input/main.py b/zpui/apps/example_apps/numpad_input/main.py
+similarity index 100%
+rename from apps/example_apps/numpad_input/main.py
+rename to zpui/apps/example_apps/numpad_input/main.py
+diff --git a/apps/example_apps/refresher/__init__.py b/zpui/apps/example_apps/refresher/__init__.py
+similarity index 100%
+rename from apps/example_apps/refresher/__init__.py
+rename to zpui/apps/example_apps/refresher/__init__.py
+diff --git a/apps/example_apps/refresher/main.py b/zpui/apps/example_apps/refresher/main.py
+similarity index 100%
+rename from apps/example_apps/refresher/main.py
+rename to zpui/apps/example_apps/refresher/main.py
+diff --git a/apps/example_apps/sandbox/__init__.py b/zpui/apps/example_apps/sandbox/__init__.py
+similarity index 100%
+rename from apps/example_apps/sandbox/__init__.py
+rename to zpui/apps/example_apps/sandbox/__init__.py
+diff --git a/apps/example_apps/sandbox/main.py b/zpui/apps/example_apps/sandbox/main.py
+similarity index 100%
+rename from apps/example_apps/sandbox/main.py
+rename to zpui/apps/example_apps/sandbox/main.py
+diff --git a/apps/example_apps/scrolling_test/__init__.py b/zpui/apps/example_apps/scrolling_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/scrolling_test/__init__.py
+rename to zpui/apps/example_apps/scrolling_test/__init__.py
+diff --git a/apps/example_apps/scrolling_test/main.py b/zpui/apps/example_apps/scrolling_test/main.py
+similarity index 100%
+rename from apps/example_apps/scrolling_test/main.py
+rename to zpui/apps/example_apps/scrolling_test/main.py
+diff --git a/apps/example_apps/skeleton/__init__.py b/zpui/apps/example_apps/skeleton/__init__.py
+similarity index 100%
+rename from apps/example_apps/skeleton/__init__.py
+rename to zpui/apps/example_apps/skeleton/__init__.py
+diff --git a/apps/example_apps/skeleton/main.py b/zpui/apps/example_apps/skeleton/main.py
+similarity index 100%
+rename from apps/example_apps/skeleton/main.py
+rename to zpui/apps/example_apps/skeleton/main.py
+diff --git a/apps/example_apps/streaming_test/__init__.py b/zpui/apps/example_apps/streaming_test/__init__.py
+similarity index 100%
+rename from apps/example_apps/streaming_test/__init__.py
+rename to zpui/apps/example_apps/streaming_test/__init__.py
+diff --git a/apps/example_apps/streaming_test/main.py b/zpui/apps/example_apps/streaming_test/main.py
+similarity index 100%
+rename from apps/example_apps/streaming_test/main.py
+rename to zpui/apps/example_apps/streaming_test/main.py
+diff --git a/apps/example_apps/test/__init__.py b/zpui/apps/example_apps/test/__init__.py
+similarity index 100%
+rename from apps/example_apps/test/__init__.py
+rename to zpui/apps/example_apps/test/__init__.py
+diff --git a/apps/example_apps/test/main.py b/zpui/apps/example_apps/test/main.py
+similarity index 100%
+rename from apps/example_apps/test/main.py
+rename to zpui/apps/example_apps/test/main.py
+diff --git a/apps/example_apps/text_reader/__init__.py b/zpui/apps/example_apps/text_reader/__init__.py
+similarity index 100%
+rename from apps/example_apps/text_reader/__init__.py
+rename to zpui/apps/example_apps/text_reader/__init__.py
+diff --git a/apps/example_apps/text_reader/main.py b/zpui/apps/example_apps/text_reader/main.py
+similarity index 100%
+rename from apps/example_apps/text_reader/main.py
+rename to zpui/apps/example_apps/text_reader/main.py
+diff --git a/apps/flashlight/__init__.py b/zpui/apps/flashlight/__init__.py
+similarity index 100%
+rename from apps/flashlight/__init__.py
+rename to zpui/apps/flashlight/__init__.py
+diff --git a/apps/flashlight/main.py b/zpui/apps/flashlight/main.py
+similarity index 100%
+rename from apps/flashlight/main.py
+rename to zpui/apps/flashlight/main.py
+diff --git a/apps/games/__init__.py b/zpui/apps/games/__init__.py
+similarity index 100%
+rename from apps/games/__init__.py
+rename to zpui/apps/games/__init__.py
+diff --git a/apps/games/g_2048/__init__.py b/zpui/apps/games/g_2048/__init__.py
+similarity index 100%
+rename from apps/games/g_2048/__init__.py
+rename to zpui/apps/games/g_2048/__init__.py
+diff --git a/apps/games/g_2048/logic.py b/zpui/apps/games/g_2048/logic.py
+similarity index 100%
+rename from apps/games/g_2048/logic.py
+rename to zpui/apps/games/g_2048/logic.py
+diff --git a/apps/games/g_2048/main.py b/zpui/apps/games/g_2048/main.py
+similarity index 100%
+rename from apps/games/g_2048/main.py
+rename to zpui/apps/games/g_2048/main.py
+diff --git a/apps/hardware_apps/__init__.py b/zpui/apps/hardware_apps/__init__.py
+similarity index 100%
+rename from apps/hardware_apps/__init__.py
+rename to zpui/apps/hardware_apps/__init__.py
+diff --git a/apps/hardware_apps/i2ctools/__init__.py b/zpui/apps/hardware_apps/i2ctools/__init__.py
+similarity index 100%
+rename from apps/hardware_apps/i2ctools/__init__.py
+rename to zpui/apps/hardware_apps/i2ctools/__init__.py
+diff --git a/apps/hardware_apps/i2ctools/main.py b/zpui/apps/hardware_apps/i2ctools/main.py
+similarity index 100%
+rename from apps/hardware_apps/i2ctools/main.py
+rename to zpui/apps/hardware_apps/i2ctools/main.py
+diff --git a/apps/hardware_apps/status/__init__.py b/zpui/apps/hardware_apps/status/__init__.py
+similarity index 100%
+rename from apps/hardware_apps/status/__init__.py
+rename to zpui/apps/hardware_apps/status/__init__.py
+diff --git a/apps/hardware_apps/status/main.py b/zpui/apps/hardware_apps/status/main.py
+similarity index 100%
+rename from apps/hardware_apps/status/main.py
+rename to zpui/apps/hardware_apps/status/main.py
+diff --git a/apps/hardware_apps/thermo/__init__.py b/zpui/apps/hardware_apps/thermo/__init__.py
+similarity index 100%
+rename from apps/hardware_apps/thermo/__init__.py
+rename to zpui/apps/hardware_apps/thermo/__init__.py
+diff --git a/apps/hardware_apps/thermo/main.py b/zpui/apps/hardware_apps/thermo/main.py
+similarity index 100%
+rename from apps/hardware_apps/thermo/main.py
+rename to zpui/apps/hardware_apps/thermo/main.py
+diff --git a/apps/hardware_apps/thermo/mlx90614.py b/zpui/apps/hardware_apps/thermo/mlx90614.py
+similarity index 100%
+rename from apps/hardware_apps/thermo/mlx90614.py
+rename to zpui/apps/hardware_apps/thermo/mlx90614.py
+diff --git a/apps/hardware_apps/usb/__init__.py b/zpui/apps/hardware_apps/usb/__init__.py
+similarity index 100%
+rename from apps/hardware_apps/usb/__init__.py
+rename to zpui/apps/hardware_apps/usb/__init__.py
+diff --git a/apps/hardware_apps/usb/main.py b/zpui/apps/hardware_apps/usb/main.py
+similarity index 100%
+rename from apps/hardware_apps/usb/main.py
+rename to zpui/apps/hardware_apps/usb/main.py
+diff --git a/apps/main_screen/__init__.py b/zpui/apps/main_screen/__init__.py
+similarity index 100%
+rename from apps/main_screen/__init__.py
+rename to zpui/apps/main_screen/__init__.py
+diff --git a/apps/main_screen/main.py b/zpui/apps/main_screen/main.py
+similarity index 100%
+rename from apps/main_screen/main.py
+rename to zpui/apps/main_screen/main.py
+diff --git a/apps/media_apps/__init__.py b/zpui/apps/media_apps/__init__.py
+similarity index 100%
+rename from apps/media_apps/__init__.py
+rename to zpui/apps/media_apps/__init__.py
+diff --git a/apps/media_apps/mocp/__init__.py b/zpui/apps/media_apps/mocp/__init__.py
+similarity index 100%
+rename from apps/media_apps/mocp/__init__.py
+rename to zpui/apps/media_apps/mocp/__init__.py
+diff --git a/apps/media_apps/mocp/main.py b/zpui/apps/media_apps/mocp/main.py
+similarity index 100%
+rename from apps/media_apps/mocp/main.py
+rename to zpui/apps/media_apps/mocp/main.py
+diff --git a/apps/media_apps/volume/__init__.py b/zpui/apps/media_apps/volume/__init__.py
+similarity index 100%
+rename from apps/media_apps/volume/__init__.py
+rename to zpui/apps/media_apps/volume/__init__.py
+diff --git a/apps/media_apps/volume/main.py b/zpui/apps/media_apps/volume/main.py
+similarity index 100%
+rename from apps/media_apps/volume/main.py
+rename to zpui/apps/media_apps/volume/main.py
+diff --git a/apps/network_apps/__init__.py b/zpui/apps/network_apps/__init__.py
+similarity index 100%
+rename from apps/network_apps/__init__.py
+rename to zpui/apps/network_apps/__init__.py
+diff --git a/apps/network_apps/network/__init__.py b/zpui/apps/network_apps/network/__init__.py
+similarity index 100%
+rename from apps/network_apps/network/__init__.py
+rename to zpui/apps/network_apps/network/__init__.py
+diff --git a/apps/network_apps/network/if_info.py b/zpui/apps/network_apps/network/if_info.py
+similarity index 100%
+rename from apps/network_apps/network/if_info.py
+rename to zpui/apps/network_apps/network/if_info.py
+diff --git a/apps/network_apps/network/main.py b/zpui/apps/network_apps/network/main.py
+similarity index 100%
+rename from apps/network_apps/network/main.py
+rename to zpui/apps/network_apps/network/main.py
+diff --git a/apps/network_apps/nmap/.gitignore b/zpui/apps/network_apps/nmap/.gitignore
+similarity index 100%
+rename from apps/network_apps/nmap/.gitignore
+rename to zpui/apps/network_apps/nmap/.gitignore
+diff --git a/apps/network_apps/nmap/__init__.py b/zpui/apps/network_apps/nmap/__init__.py
+similarity index 100%
+rename from apps/network_apps/nmap/__init__.py
+rename to zpui/apps/network_apps/nmap/__init__.py
+diff --git a/apps/network_apps/nmap/if_info.py b/zpui/apps/network_apps/nmap/if_info.py
+similarity index 100%
+rename from apps/network_apps/nmap/if_info.py
+rename to zpui/apps/network_apps/nmap/if_info.py
+diff --git a/apps/network_apps/nmap/main.py b/zpui/apps/network_apps/nmap/main.py
+similarity index 100%
+rename from apps/network_apps/nmap/main.py
+rename to zpui/apps/network_apps/nmap/main.py
+diff --git a/apps/network_apps/upnp/__init__.py b/zpui/apps/network_apps/upnp/__init__.py
+similarity index 100%
+rename from apps/network_apps/upnp/__init__.py
+rename to zpui/apps/network_apps/upnp/__init__.py
+diff --git a/apps/network_apps/upnp/main.py b/zpui/apps/network_apps/upnp/main.py
+similarity index 100%
+rename from apps/network_apps/upnp/main.py
+rename to zpui/apps/network_apps/upnp/main.py
+diff --git a/apps/network_apps/wpa_cli/__init__.py b/zpui/apps/network_apps/wpa_cli/__init__.py
+similarity index 100%
+rename from apps/network_apps/wpa_cli/__init__.py
+rename to zpui/apps/network_apps/wpa_cli/__init__.py
+diff --git a/apps/network_apps/wpa_cli/main.py b/zpui/apps/network_apps/wpa_cli/main.py
+similarity index 100%
+rename from apps/network_apps/wpa_cli/main.py
+rename to zpui/apps/network_apps/wpa_cli/main.py
+diff --git a/apps/network_apps/wpa_cli/wpa_cli.py b/zpui/apps/network_apps/wpa_cli/wpa_cli.py
+similarity index 100%
+rename from apps/network_apps/wpa_cli/wpa_cli.py
+rename to zpui/apps/network_apps/wpa_cli/wpa_cli.py
+diff --git a/apps/personal/__init__.py b/zpui/apps/personal/__init__.py
+similarity index 100%
+rename from apps/personal/__init__.py
+rename to zpui/apps/personal/__init__.py
+diff --git a/apps/personal/contacts/__init__.py b/zpui/apps/personal/contacts/__init__.py
+similarity index 100%
+rename from apps/personal/contacts/__init__.py
+rename to zpui/apps/personal/contacts/__init__.py
+diff --git a/apps/personal/contacts/address_book.py b/zpui/apps/personal/contacts/address_book.py
+similarity index 100%
+rename from apps/personal/contacts/address_book.py
+rename to zpui/apps/personal/contacts/address_book.py
+diff --git a/apps/personal/contacts/main.py b/zpui/apps/personal/contacts/main.py
+similarity index 100%
+rename from apps/personal/contacts/main.py
+rename to zpui/apps/personal/contacts/main.py
+diff --git a/apps/personal/contacts/vcard_converter.py b/zpui/apps/personal/contacts/vcard_converter.py
+similarity index 100%
+rename from apps/personal/contacts/vcard_converter.py
+rename to zpui/apps/personal/contacts/vcard_converter.py
+diff --git a/apps/personal/lecture_helper/__init__.py b/zpui/apps/personal/lecture_helper/__init__.py
+similarity index 100%
+rename from apps/personal/lecture_helper/__init__.py
+rename to zpui/apps/personal/lecture_helper/__init__.py
+diff --git a/apps/personal/lecture_helper/main.py b/zpui/apps/personal/lecture_helper/main.py
+similarity index 100%
+rename from apps/personal/lecture_helper/main.py
+rename to zpui/apps/personal/lecture_helper/main.py
+diff --git a/apps/personal/pomodorod/__init__.py b/zpui/apps/personal/pomodorod/__init__.py
+similarity index 100%
+rename from apps/personal/pomodorod/__init__.py
+rename to zpui/apps/personal/pomodorod/__init__.py
+diff --git a/apps/personal/pomodorod/main.py b/zpui/apps/personal/pomodorod/main.py
+similarity index 100%
+rename from apps/personal/pomodorod/main.py
+rename to zpui/apps/personal/pomodorod/main.py
+diff --git a/apps/personal/todo_txt/__init__.py b/zpui/apps/personal/todo_txt/__init__.py
+similarity index 100%
+rename from apps/personal/todo_txt/__init__.py
+rename to zpui/apps/personal/todo_txt/__init__.py
+diff --git a/apps/personal/todo_txt/main.py b/zpui/apps/personal/todo_txt/main.py
+similarity index 100%
+rename from apps/personal/todo_txt/main.py
+rename to zpui/apps/personal/todo_txt/main.py
+diff --git a/apps/personal/todo_txt/tasklib.py b/zpui/apps/personal/todo_txt/tasklib.py
+similarity index 100%
+rename from apps/personal/todo_txt/tasklib.py
+rename to zpui/apps/personal/todo_txt/tasklib.py
+diff --git a/apps/personal/totp_2fa/__init__.py b/zpui/apps/personal/totp_2fa/__init__.py
+similarity index 100%
+rename from apps/personal/totp_2fa/__init__.py
+rename to zpui/apps/personal/totp_2fa/__init__.py
+diff --git a/apps/personal/totp_2fa/main.py b/zpui/apps/personal/totp_2fa/main.py
+similarity index 100%
+rename from apps/personal/totp_2fa/main.py
+rename to zpui/apps/personal/totp_2fa/main.py
+diff --git a/apps/phone/TODO b/zpui/apps/phone/TODO
+similarity index 100%
+rename from apps/phone/TODO
+rename to zpui/apps/phone/TODO
+diff --git a/apps/phone/__init__.py b/zpui/apps/phone/__init__.py
+similarity index 100%
+rename from apps/phone/__init__.py
+rename to zpui/apps/phone/__init__.py
+diff --git a/apps/phone/main.py b/zpui/apps/phone/main.py
+similarity index 100%
+rename from apps/phone/main.py
+rename to zpui/apps/phone/main.py
+diff --git a/apps/phone/phone.py b/zpui/apps/phone/phone.py
+similarity index 100%
+rename from apps/phone/phone.py
+rename to zpui/apps/phone/phone.py
+diff --git a/apps/privacy_apps/__init__.py b/zpui/apps/privacy_apps/__init__.py
+similarity index 100%
+rename from apps/privacy_apps/__init__.py
+rename to zpui/apps/privacy_apps/__init__.py
+diff --git a/apps/privacy_apps/tor/__init__.py b/zpui/apps/privacy_apps/tor/__init__.py
+similarity index 100%
+rename from apps/privacy_apps/tor/__init__.py
+rename to zpui/apps/privacy_apps/tor/__init__.py
+diff --git a/apps/privacy_apps/tor/main.py b/zpui/apps/privacy_apps/tor/main.py
+similarity index 100%
+rename from apps/privacy_apps/tor/main.py
+rename to zpui/apps/privacy_apps/tor/main.py
+diff --git a/apps/privacy_apps/tor/tor.py b/zpui/apps/privacy_apps/tor/tor.py
+similarity index 100%
+rename from apps/privacy_apps/tor/tor.py
+rename to zpui/apps/privacy_apps/tor/tor.py
+diff --git a/apps/raspberrypi/__init__.py b/zpui/apps/raspberrypi/__init__.py
+similarity index 100%
+rename from apps/raspberrypi/__init__.py
+rename to zpui/apps/raspberrypi/__init__.py
+diff --git a/apps/raspberrypi/tvservice/__init__.py b/zpui/apps/raspberrypi/tvservice/__init__.py
+similarity index 100%
+rename from apps/raspberrypi/tvservice/__init__.py
+rename to zpui/apps/raspberrypi/tvservice/__init__.py
+diff --git a/apps/raspberrypi/tvservice/main.py b/zpui/apps/raspberrypi/tvservice/main.py
+similarity index 100%
+rename from apps/raspberrypi/tvservice/main.py
+rename to zpui/apps/raspberrypi/tvservice/main.py
+diff --git a/apps/raspberrypi/tvservice/tvservice.py b/zpui/apps/raspberrypi/tvservice/tvservice.py
+similarity index 100%
+rename from apps/raspberrypi/tvservice/tvservice.py
+rename to zpui/apps/raspberrypi/tvservice/tvservice.py
+diff --git a/apps/scripts/__init__.py b/zpui/apps/scripts/__init__.py
+similarity index 100%
+rename from apps/scripts/__init__.py
+rename to zpui/apps/scripts/__init__.py
+diff --git a/apps/scripts/main.py b/zpui/apps/scripts/main.py
+similarity index 100%
+rename from apps/scripts/main.py
+rename to zpui/apps/scripts/main.py
+diff --git a/apps/scripts/s/dmesg.sh b/zpui/apps/scripts/s/dmesg.sh
+similarity index 100%
+rename from apps/scripts/s/dmesg.sh
+rename to zpui/apps/scripts/s/dmesg.sh
+diff --git a/apps/scripts/s/example.sh b/zpui/apps/scripts/s/example.sh
+similarity index 100%
+rename from apps/scripts/s/example.sh
+rename to zpui/apps/scripts/s/example.sh
+diff --git a/apps/scripts/s/login.sh b/zpui/apps/scripts/s/login.sh
+similarity index 100%
+rename from apps/scripts/s/login.sh
+rename to zpui/apps/scripts/s/login.sh
+diff --git a/apps/scripts/s/rpi_photo.sh b/zpui/apps/scripts/s/rpi_photo.sh
+similarity index 100%
+rename from apps/scripts/s/rpi_photo.sh
+rename to zpui/apps/scripts/s/rpi_photo.sh
+diff --git a/apps/settings/__init__.py b/zpui/apps/settings/__init__.py
+similarity index 100%
+rename from apps/settings/__init__.py
+rename to zpui/apps/settings/__init__.py
+diff --git a/apps/settings/logging_ui.py b/zpui/apps/settings/logging_ui.py
+similarity index 100%
+rename from apps/settings/logging_ui.py
+rename to zpui/apps/settings/logging_ui.py
+diff --git a/apps/settings/main.py b/zpui/apps/settings/main.py
+similarity index 100%
+rename from apps/settings/main.py
+rename to zpui/apps/settings/main.py
+diff --git a/apps/settings/pretest_migration.py b/zpui/apps/settings/pretest_migration.py
+similarity index 100%
+rename from apps/settings/pretest_migration.py
+rename to zpui/apps/settings/pretest_migration.py
+diff --git a/apps/stopwatch/__init__.py b/zpui/apps/stopwatch/__init__.py
+similarity index 100%
+rename from apps/stopwatch/__init__.py
+rename to zpui/apps/stopwatch/__init__.py
+diff --git a/apps/stopwatch/main.py b/zpui/apps/stopwatch/main.py
+similarity index 100%
+rename from apps/stopwatch/main.py
+rename to zpui/apps/stopwatch/main.py
+diff --git a/apps/system_apps/__init__.py b/zpui/apps/system_apps/__init__.py
+similarity index 100%
+rename from apps/system_apps/__init__.py
+rename to zpui/apps/system_apps/__init__.py
+diff --git a/apps/system_apps/lsusb/__init__.py b/zpui/apps/system_apps/lsusb/__init__.py
+similarity index 100%
+rename from apps/system_apps/lsusb/__init__.py
+rename to zpui/apps/system_apps/lsusb/__init__.py
+diff --git a/apps/system_apps/lsusb/lsusb.py b/zpui/apps/system_apps/lsusb/lsusb.py
+similarity index 100%
+rename from apps/system_apps/lsusb/lsusb.py
+rename to zpui/apps/system_apps/lsusb/lsusb.py
+diff --git a/apps/system_apps/lsusb/main.py b/zpui/apps/system_apps/lsusb/main.py
+similarity index 100%
+rename from apps/system_apps/lsusb/main.py
+rename to zpui/apps/system_apps/lsusb/main.py
+diff --git a/apps/system_apps/partitions/__init__.py b/zpui/apps/system_apps/partitions/__init__.py
+similarity index 100%
+rename from apps/system_apps/partitions/__init__.py
+rename to zpui/apps/system_apps/partitions/__init__.py
+diff --git a/apps/system_apps/partitions/device_info.py b/zpui/apps/system_apps/partitions/device_info.py
+similarity index 100%
+rename from apps/system_apps/partitions/device_info.py
+rename to zpui/apps/system_apps/partitions/device_info.py
+diff --git a/apps/system_apps/partitions/main.py b/zpui/apps/system_apps/partitions/main.py
+similarity index 100%
+rename from apps/system_apps/partitions/main.py
+rename to zpui/apps/system_apps/partitions/main.py
+diff --git a/apps/system_apps/shutdown/__init__.py b/zpui/apps/system_apps/shutdown/__init__.py
+similarity index 100%
+rename from apps/system_apps/shutdown/__init__.py
+rename to zpui/apps/system_apps/shutdown/__init__.py
+diff --git a/apps/system_apps/shutdown/main.py b/zpui/apps/system_apps/shutdown/main.py
+similarity index 100%
+rename from apps/system_apps/shutdown/main.py
+rename to zpui/apps/system_apps/shutdown/main.py
+diff --git a/apps/system_apps/system/__init__.py b/zpui/apps/system_apps/system/__init__.py
+similarity index 100%
+rename from apps/system_apps/system/__init__.py
+rename to zpui/apps/system_apps/system/__init__.py
+diff --git a/apps/system_apps/system/main.py b/zpui/apps/system_apps/system/main.py
+similarity index 100%
+rename from apps/system_apps/system/main.py
+rename to zpui/apps/system_apps/system/main.py
+diff --git a/apps/system_apps/system/sys_info.py b/zpui/apps/system_apps/system/sys_info.py
+similarity index 100%
+rename from apps/system_apps/system/sys_info.py
+rename to zpui/apps/system_apps/system/sys_info.py
+diff --git a/apps/system_apps/systemctl/__init__.py b/zpui/apps/system_apps/systemctl/__init__.py
+similarity index 100%
+rename from apps/system_apps/systemctl/__init__.py
+rename to zpui/apps/system_apps/systemctl/__init__.py
+diff --git a/apps/system_apps/systemctl/main.py b/zpui/apps/system_apps/systemctl/main.py
+similarity index 100%
+rename from apps/system_apps/systemctl/main.py
+rename to zpui/apps/system_apps/systemctl/main.py
+diff --git a/apps/system_apps/systemctl/systemctl.py b/zpui/apps/system_apps/systemctl/systemctl.py
+similarity index 100%
+rename from apps/system_apps/systemctl/systemctl.py
+rename to zpui/apps/system_apps/systemctl/systemctl.py
+diff --git a/apps/test_hardware/.gitignore b/zpui/apps/test_hardware/.gitignore
+similarity index 100%
+rename from apps/test_hardware/.gitignore
+rename to zpui/apps/test_hardware/.gitignore
+diff --git a/apps/test_hardware/__init__.py b/zpui/apps/test_hardware/__init__.py
+similarity index 100%
+rename from apps/test_hardware/__init__.py
+rename to zpui/apps/test_hardware/__init__.py
+diff --git a/apps/test_hardware/key_test.py b/zpui/apps/test_hardware/key_test.py
+similarity index 100%
+rename from apps/test_hardware/key_test.py
+rename to zpui/apps/test_hardware/key_test.py
+diff --git a/apps/test_hardware/main.py b/zpui/apps/test_hardware/main.py
+similarity index 100%
+rename from apps/test_hardware/main.py
+rename to zpui/apps/test_hardware/main.py
+diff --git a/apps/utils/__init__.py b/zpui/apps/utils/__init__.py
+similarity index 100%
+rename from apps/utils/__init__.py
+rename to zpui/apps/utils/__init__.py
+diff --git a/apps/utils/file_browser/__init__.py b/zpui/apps/utils/file_browser/__init__.py
+similarity index 100%
+rename from apps/utils/file_browser/__init__.py
+rename to zpui/apps/utils/file_browser/__init__.py
+diff --git a/apps/utils/file_browser/main.py b/zpui/apps/utils/file_browser/main.py
+similarity index 100%
+rename from apps/utils/file_browser/main.py
+rename to zpui/apps/utils/file_browser/main.py
+diff --git a/apps/utils/spinner/__init__.py b/zpui/apps/utils/spinner/__init__.py
+similarity index 100%
+rename from apps/utils/spinner/__init__.py
+rename to zpui/apps/utils/spinner/__init__.py
+diff --git a/apps/utils/spinner/main.py b/zpui/apps/utils/spinner/main.py
+similarity index 100%
+rename from apps/utils/spinner/main.py
+rename to zpui/apps/utils/spinner/main.py
+diff --git a/apps/zero_app.py b/zpui/apps/zero_app.py
+similarity index 100%
+rename from apps/zero_app.py
+rename to zpui/apps/zero_app.py
+diff --git a/apps/zeromenu/__init__.py b/zpui/apps/zeromenu/__init__.py
+similarity index 100%
+rename from apps/zeromenu/__init__.py
+rename to zpui/apps/zeromenu/__init__.py
+diff --git a/apps/zeromenu/main.py b/zpui/apps/zeromenu/main.py
+similarity index 100%
+rename from apps/zeromenu/main.py
+rename to zpui/apps/zeromenu/main.py
+diff --git a/context_manager.py b/zpui/context_manager.py
+similarity index 100%
+rename from context_manager.py
+rename to zpui/context_manager.py
+diff --git a/docs/Makefile b/zpui/docs/Makefile
+similarity index 100%
+rename from docs/Makefile
+rename to zpui/docs/Makefile
+diff --git a/docs/_static/ZPUI_Emulator.png b/zpui/docs/_static/ZPUI_Emulator.png
+similarity index 100%
+rename from docs/_static/ZPUI_Emulator.png
+rename to zpui/docs/_static/ZPUI_Emulator.png
+diff --git a/docs/_static/canvas_test_1.png b/zpui/docs/_static/canvas_test_1.png
+similarity index 100%
+rename from docs/_static/canvas_test_1.png
+rename to zpui/docs/_static/canvas_test_1.png
+diff --git a/docs/_static/canvas_test_2.png b/zpui/docs/_static/canvas_test_2.png
+similarity index 100%
+rename from docs/_static/canvas_test_2.png
+rename to zpui/docs/_static/canvas_test_2.png
+diff --git a/docs/_static/canvas_test_3.png b/zpui/docs/_static/canvas_test_3.png
+similarity index 100%
+rename from docs/_static/canvas_test_3.png
+rename to zpui/docs/_static/canvas_test_3.png
+diff --git a/docs/_static/canvas_test_4.png b/zpui/docs/_static/canvas_test_4.png
+similarity index 100%
+rename from docs/_static/canvas_test_4.png
+rename to zpui/docs/_static/canvas_test_4.png
+diff --git a/docs/_static/canvas_test_5.png b/zpui/docs/_static/canvas_test_5.png
+similarity index 100%
+rename from docs/_static/canvas_test_5.png
+rename to zpui/docs/_static/canvas_test_5.png
+diff --git a/docs/_static/canvas_test_6.png b/zpui/docs/_static/canvas_test_6.png
+similarity index 100%
+rename from docs/_static/canvas_test_6.png
+rename to zpui/docs/_static/canvas_test_6.png
+diff --git a/docs/_static/canvas_test_7.png b/zpui/docs/_static/canvas_test_7.png
+similarity index 100%
+rename from docs/_static/canvas_test_7.png
+rename to zpui/docs/_static/canvas_test_7.png
+diff --git a/docs/_static/canvas_test_8.png b/zpui/docs/_static/canvas_test_8.png
+similarity index 100%
+rename from docs/_static/canvas_test_8.png
+rename to zpui/docs/_static/canvas_test_8.png
+diff --git a/docs/app_mgmt.rst b/zpui/docs/app_mgmt.rst
+similarity index 100%
+rename from docs/app_mgmt.rst
+rename to zpui/docs/app_mgmt.rst
+diff --git a/docs/apps.rst b/zpui/docs/apps.rst
+similarity index 100%
+rename from docs/apps.rst
+rename to zpui/docs/apps.rst
+diff --git a/docs/apps/class_based_skeleton.rst b/zpui/docs/apps/class_based_skeleton.rst
+similarity index 100%
+rename from docs/apps/class_based_skeleton.rst
+rename to zpui/docs/apps/class_based_skeleton.rst
+diff --git a/docs/apps/clock.rst b/zpui/docs/apps/clock.rst
+similarity index 100%
+rename from docs/apps/clock.rst
+rename to zpui/docs/apps/clock.rst
+diff --git a/docs/apps/i2ctools.rst b/zpui/docs/apps/i2ctools.rst
+similarity index 100%
+rename from docs/apps/i2ctools.rst
+rename to zpui/docs/apps/i2ctools.rst
+diff --git a/docs/apps/lsusb.rst b/zpui/docs/apps/lsusb.rst
+similarity index 100%
+rename from docs/apps/lsusb.rst
+rename to zpui/docs/apps/lsusb.rst
+diff --git a/docs/apps/mocp.rst b/zpui/docs/apps/mocp.rst
+similarity index 100%
+rename from docs/apps/mocp.rst
+rename to zpui/docs/apps/mocp.rst
+diff --git a/docs/apps/network.rst b/zpui/docs/apps/network.rst
+similarity index 100%
+rename from docs/apps/network.rst
+rename to zpui/docs/apps/network.rst
+diff --git a/docs/apps/partitions.rst b/zpui/docs/apps/partitions.rst
+similarity index 100%
+rename from docs/apps/partitions.rst
+rename to zpui/docs/apps/partitions.rst
+diff --git a/docs/apps/scripts.rst b/zpui/docs/apps/scripts.rst
+similarity index 100%
+rename from docs/apps/scripts.rst
+rename to zpui/docs/apps/scripts.rst
+diff --git a/docs/apps/shutdown.rst b/zpui/docs/apps/shutdown.rst
+similarity index 100%
+rename from docs/apps/shutdown.rst
+rename to zpui/docs/apps/shutdown.rst
+diff --git a/docs/apps/skeleton.rst b/zpui/docs/apps/skeleton.rst
+similarity index 100%
+rename from docs/apps/skeleton.rst
+rename to zpui/docs/apps/skeleton.rst
+diff --git a/docs/apps/system_info.rst b/zpui/docs/apps/system_info.rst
+similarity index 100%
+rename from docs/apps/system_info.rst
+rename to zpui/docs/apps/system_info.rst
+diff --git a/docs/apps/systemctl.rst b/zpui/docs/apps/systemctl.rst
+similarity index 100%
+rename from docs/apps/systemctl.rst
+rename to zpui/docs/apps/systemctl.rst
+diff --git a/docs/apps/tvservice.rst b/zpui/docs/apps/tvservice.rst
+similarity index 100%
+rename from docs/apps/tvservice.rst
+rename to zpui/docs/apps/tvservice.rst
+diff --git a/docs/apps/update.rst b/zpui/docs/apps/update.rst
+similarity index 100%
+rename from docs/apps/update.rst
+rename to zpui/docs/apps/update.rst
+diff --git a/docs/apps/volume.rst b/zpui/docs/apps/volume.rst
+similarity index 100%
+rename from docs/apps/volume.rst
+rename to zpui/docs/apps/volume.rst
+diff --git a/docs/apps/wpa_cli.rst b/zpui/docs/apps/wpa_cli.rst
+similarity index 100%
+rename from docs/apps/wpa_cli.rst
+rename to zpui/docs/apps/wpa_cli.rst
+diff --git a/docs/conf.py b/zpui/docs/conf.py
+similarity index 100%
+rename from docs/conf.py
+rename to zpui/docs/conf.py
+diff --git a/docs/config.rst b/zpui/docs/config.rst
+similarity index 100%
+rename from docs/config.rst
+rename to zpui/docs/config.rst
+diff --git a/docs/contact.rst b/zpui/docs/contact.rst
+similarity index 100%
+rename from docs/contact.rst
+rename to zpui/docs/contact.rst
+diff --git a/docs/copy_enlarge_images.py b/zpui/docs/copy_enlarge_images.py
+similarity index 100%
+rename from docs/copy_enlarge_images.py
+rename to zpui/docs/copy_enlarge_images.py
+diff --git a/docs/debugging.rst b/zpui/docs/debugging.rst
+similarity index 100%
+rename from docs/debugging.rst
+rename to zpui/docs/debugging.rst
+diff --git a/docs/docs_development.rst b/zpui/docs/docs_development.rst
+similarity index 100%
+rename from docs/docs_development.rst
+rename to zpui/docs/docs_development.rst
+diff --git a/docs/faq_contact.rst b/zpui/docs/faq_contact.rst
+similarity index 100%
+rename from docs/faq_contact.rst
+rename to zpui/docs/faq_contact.rst
+diff --git a/docs/hacking_ui.rst b/zpui/docs/hacking_ui.rst
+similarity index 100%
+rename from docs/hacking_ui.rst
+rename to zpui/docs/hacking_ui.rst
+diff --git a/docs/hardware.rst b/zpui/docs/hardware.rst
+similarity index 100%
+rename from docs/hardware.rst
+rename to zpui/docs/hardware.rst
+diff --git a/docs/helpers.rst b/zpui/docs/helpers.rst
+similarity index 100%
+rename from docs/helpers.rst
+rename to zpui/docs/helpers.rst
+diff --git a/docs/howto.rst b/zpui/docs/howto.rst
+similarity index 100%
+rename from docs/howto.rst
+rename to zpui/docs/howto.rst
+diff --git a/docs/index.rst b/zpui/docs/index.rst
+similarity index 100%
+rename from docs/index.rst
+rename to zpui/docs/index.rst
+diff --git a/docs/input.rst b/zpui/docs/input.rst
+similarity index 100%
+rename from docs/input.rst
+rename to zpui/docs/input.rst
+diff --git a/docs/input/adafruit.rst b/zpui/docs/input/adafruit.rst
+similarity index 100%
+rename from docs/input/adafruit.rst
+rename to zpui/docs/input/adafruit.rst
+diff --git a/docs/input/hid.rst b/zpui/docs/input/hid.rst
+similarity index 100%
+rename from docs/input/hid.rst
+rename to zpui/docs/input/hid.rst
+diff --git a/docs/input/pcf8574.rst b/zpui/docs/input/pcf8574.rst
+similarity index 100%
+rename from docs/input/pcf8574.rst
+rename to zpui/docs/input/pcf8574.rst
+diff --git a/docs/input/pi_gpio.rst b/zpui/docs/input/pi_gpio.rst
+similarity index 100%
+rename from docs/input/pi_gpio.rst
+rename to zpui/docs/input/pi_gpio.rst
+diff --git a/docs/input/pifacecad.rst b/zpui/docs/input/pifacecad.rst
+similarity index 100%
+rename from docs/input/pifacecad.rst
+rename to zpui/docs/input/pifacecad.rst
+diff --git a/docs/logging.rst b/zpui/docs/logging.rst
+similarity index 100%
+rename from docs/logging.rst
+rename to zpui/docs/logging.rst
+diff --git a/docs/output.rst b/zpui/docs/output.rst
+similarity index 100%
+rename from docs/output.rst
+rename to zpui/docs/output.rst
+diff --git a/docs/output/adafruit.rst b/zpui/docs/output/adafruit.rst
+similarity index 100%
+rename from docs/output/adafruit.rst
+rename to zpui/docs/output/adafruit.rst
+diff --git a/docs/output/mcp23008.rst b/zpui/docs/output/mcp23008.rst
+similarity index 100%
+rename from docs/output/mcp23008.rst
+rename to zpui/docs/output/mcp23008.rst
+diff --git a/docs/output/pcf8574.rst b/zpui/docs/output/pcf8574.rst
+similarity index 100%
+rename from docs/output/pcf8574.rst
+rename to zpui/docs/output/pcf8574.rst
+diff --git a/docs/output/pi_gpio.rst b/zpui/docs/output/pi_gpio.rst
+similarity index 100%
+rename from docs/output/pi_gpio.rst
+rename to zpui/docs/output/pi_gpio.rst
+diff --git a/docs/output/pifacecad.rst b/zpui/docs/output/pifacecad.rst
+similarity index 100%
+rename from docs/output/pifacecad.rst
+rename to zpui/docs/output/pifacecad.rst
+diff --git a/docs/plans.rst b/zpui/docs/plans.rst
+similarity index 100%
+rename from docs/plans.rst
+rename to zpui/docs/plans.rst
+diff --git a/docs/run_server.py b/zpui/docs/run_server.py
+similarity index 100%
+rename from docs/run_server.py
+rename to zpui/docs/run_server.py
+diff --git a/docs/setup.rst b/zpui/docs/setup.rst
+similarity index 100%
+rename from docs/setup.rst
+rename to zpui/docs/setup.rst
+diff --git a/docs/ui.rst b/zpui/docs/ui.rst
+similarity index 100%
+rename from docs/ui.rst
+rename to zpui/docs/ui.rst
+diff --git a/docs/ui/canvas.rst b/zpui/docs/ui/canvas.rst
+similarity index 100%
+rename from docs/ui/canvas.rst
+rename to zpui/docs/ui/canvas.rst
+diff --git a/docs/ui/char_input.rst b/zpui/docs/ui/char_input.rst
+similarity index 100%
+rename from docs/ui/char_input.rst
+rename to zpui/docs/ui/char_input.rst
+diff --git a/docs/ui/checkbox.rst b/zpui/docs/ui/checkbox.rst
+similarity index 100%
+rename from docs/ui/checkbox.rst
+rename to zpui/docs/ui/checkbox.rst
+diff --git a/docs/ui/menu.rst b/zpui/docs/ui/menu.rst
+similarity index 100%
+rename from docs/ui/menu.rst
+rename to zpui/docs/ui/menu.rst
+diff --git a/docs/ui/number_input.rst b/zpui/docs/ui/number_input.rst
+similarity index 100%
+rename from docs/ui/number_input.rst
+rename to zpui/docs/ui/number_input.rst
+diff --git a/docs/ui/printer.rst b/zpui/docs/ui/printer.rst
+similarity index 100%
+rename from docs/ui/printer.rst
+rename to zpui/docs/ui/printer.rst
+diff --git a/docs/ui/refresher.rst b/zpui/docs/ui/refresher.rst
+similarity index 100%
+rename from docs/ui/refresher.rst
+rename to zpui/docs/ui/refresher.rst
+diff --git a/emulator.py b/zpui/emulator.py
+similarity index 100%
+rename from emulator.py
+rename to zpui/emulator.py
+diff --git a/helpers/__init__.py b/zpui/helpers/__init__.py
+similarity index 100%
+rename from helpers/__init__.py
+rename to zpui/helpers/__init__.py
+diff --git a/helpers/config_parse.py b/zpui/helpers/config_parse.py
+similarity index 100%
+rename from helpers/config_parse.py
+rename to zpui/helpers/config_parse.py
+diff --git a/helpers/general.py b/zpui/helpers/general.py
+similarity index 100%
+rename from helpers/general.py
+rename to zpui/helpers/general.py
+diff --git a/helpers/logger.py b/zpui/helpers/logger.py
+similarity index 100%
+rename from helpers/logger.py
+rename to zpui/helpers/logger.py
+diff --git a/helpers/runners.py b/zpui/helpers/runners.py
+similarity index 100%
+rename from helpers/runners.py
+rename to zpui/helpers/runners.py
+diff --git a/helpers/usability.py b/zpui/helpers/usability.py
+similarity index 100%
+rename from helpers/usability.py
+rename to zpui/helpers/usability.py
+diff --git a/input/__init__.py b/zpui/input/__init__.py
+similarity index 100%
+rename from input/__init__.py
+rename to zpui/input/__init__.py
+diff --git a/input/drivers/__init__.py b/zpui/input/drivers/__init__.py
+similarity index 100%
+rename from input/drivers/__init__.py
+rename to zpui/input/drivers/__init__.py
+diff --git a/input/drivers/adafruit_plate.py b/zpui/input/drivers/adafruit_plate.py
+similarity index 100%
+rename from input/drivers/adafruit_plate.py
+rename to zpui/input/drivers/adafruit_plate.py
+diff --git a/input/drivers/custom_i2c.py b/zpui/input/drivers/custom_i2c.py
+similarity index 100%
+rename from input/drivers/custom_i2c.py
+rename to zpui/input/drivers/custom_i2c.py
+diff --git a/input/drivers/hid.py b/zpui/input/drivers/hid.py
+similarity index 100%
+rename from input/drivers/hid.py
+rename to zpui/input/drivers/hid.py
+diff --git a/input/drivers/max7318.py b/zpui/input/drivers/max7318.py
+similarity index 100%
+rename from input/drivers/max7318.py
+rename to zpui/input/drivers/max7318.py
+diff --git a/input/drivers/pcf8574.py b/zpui/input/drivers/pcf8574.py
+similarity index 100%
+rename from input/drivers/pcf8574.py
+rename to zpui/input/drivers/pcf8574.py
+diff --git a/input/drivers/pfcad.py b/zpui/input/drivers/pfcad.py
+similarity index 100%
+rename from input/drivers/pfcad.py
+rename to zpui/input/drivers/pfcad.py
+diff --git a/input/drivers/pi_gpio.py b/zpui/input/drivers/pi_gpio.py
+similarity index 100%
+rename from input/drivers/pi_gpio.py
+rename to zpui/input/drivers/pi_gpio.py
+diff --git a/input/drivers/pi_gpio_matrix.py b/zpui/input/drivers/pi_gpio_matrix.py
+similarity index 100%
+rename from input/drivers/pi_gpio_matrix.py
+rename to zpui/input/drivers/pi_gpio_matrix.py
+diff --git a/input/drivers/pygame_input.py b/zpui/input/drivers/pygame_input.py
+similarity index 100%
+rename from input/drivers/pygame_input.py
+rename to zpui/input/drivers/pygame_input.py
+diff --git a/input/drivers/skeleton.py b/zpui/input/drivers/skeleton.py
+similarity index 100%
+rename from input/drivers/skeleton.py
+rename to zpui/input/drivers/skeleton.py
+diff --git a/input/input.py b/zpui/input/input.py
+similarity index 100%
+rename from input/input.py
+rename to zpui/input/input.py
+diff --git a/main.py b/zpui/main.py
+similarity index 100%
+rename from main.py
+rename to zpui/main.py
+diff --git a/output/__init__.py b/zpui/output/__init__.py
+similarity index 100%
+rename from output/__init__.py
+rename to zpui/output/__init__.py
+diff --git a/output/drivers/__init__.py b/zpui/output/drivers/__init__.py
+similarity index 100%
+rename from output/drivers/__init__.py
+rename to zpui/output/drivers/__init__.py
+diff --git a/output/drivers/adafruit_plate.py b/zpui/output/drivers/adafruit_plate.py
+similarity index 100%
+rename from output/drivers/adafruit_plate.py
+rename to zpui/output/drivers/adafruit_plate.py
+diff --git a/output/drivers/arduino_lcd.py b/zpui/output/drivers/arduino_lcd.py
+similarity index 100%
+rename from output/drivers/arduino_lcd.py
+rename to zpui/output/drivers/arduino_lcd.py
+diff --git a/output/drivers/backlight.py b/zpui/output/drivers/backlight.py
+similarity index 100%
+rename from output/drivers/backlight.py
+rename to zpui/output/drivers/backlight.py
+diff --git a/output/drivers/hd44780.py b/zpui/output/drivers/hd44780.py
+similarity index 100%
+rename from output/drivers/hd44780.py
+rename to zpui/output/drivers/hd44780.py
+diff --git a/output/drivers/luma_driver.py b/zpui/output/drivers/luma_driver.py
+similarity index 100%
+rename from output/drivers/luma_driver.py
+rename to zpui/output/drivers/luma_driver.py
+diff --git a/output/drivers/mcp23008.py b/zpui/output/drivers/mcp23008.py
+similarity index 100%
+rename from output/drivers/mcp23008.py
+rename to zpui/output/drivers/mcp23008.py
+diff --git a/output/drivers/pcf8574.py b/zpui/output/drivers/pcf8574.py
+similarity index 100%
+rename from output/drivers/pcf8574.py
+rename to zpui/output/drivers/pcf8574.py
+diff --git a/output/drivers/pfcad.py b/zpui/output/drivers/pfcad.py
+similarity index 100%
+rename from output/drivers/pfcad.py
+rename to zpui/output/drivers/pfcad.py
+diff --git a/output/drivers/pi_gpio.py b/zpui/output/drivers/pi_gpio.py
+similarity index 100%
+rename from output/drivers/pi_gpio.py
+rename to zpui/output/drivers/pi_gpio.py
+diff --git a/output/drivers/pygame_emulator.py b/zpui/output/drivers/pygame_emulator.py
+similarity index 100%
+rename from output/drivers/pygame_emulator.py
+rename to zpui/output/drivers/pygame_emulator.py
+diff --git a/output/drivers/pygame_emulator_factory.py b/zpui/output/drivers/pygame_emulator_factory.py
+similarity index 100%
+rename from output/drivers/pygame_emulator_factory.py
+rename to zpui/output/drivers/pygame_emulator_factory.py
+diff --git a/output/drivers/rw1062.py b/zpui/output/drivers/rw1062.py
+similarity index 100%
+rename from output/drivers/rw1062.py
+rename to zpui/output/drivers/rw1062.py
+diff --git a/output/drivers/serial_lcd_0.py b/zpui/output/drivers/serial_lcd_0.py
+similarity index 100%
+rename from output/drivers/serial_lcd_0.py
+rename to zpui/output/drivers/serial_lcd_0.py
+diff --git a/output/drivers/sh1106.py b/zpui/output/drivers/sh1106.py
+similarity index 100%
+rename from output/drivers/sh1106.py
+rename to zpui/output/drivers/sh1106.py
+diff --git a/output/drivers/ssd1306.py b/zpui/output/drivers/ssd1306.py
+similarity index 100%
+rename from output/drivers/ssd1306.py
+rename to zpui/output/drivers/ssd1306.py
+diff --git a/output/output.py b/zpui/output/output.py
+similarity index 100%
+rename from output/output.py
+rename to zpui/output/output.py
+diff --git a/splash.py b/zpui/splash.py
+similarity index 100%
+rename from splash.py
+rename to zpui/splash.py
+diff --git a/tests/test_context_manager.py b/zpui/tests/test_context_manager.py
+similarity index 100%
+rename from tests/test_context_manager.py
+rename to zpui/tests/test_context_manager.py
+diff --git a/ui/__init__.py b/zpui/ui/__init__.py
+similarity index 100%
+rename from ui/__init__.py
+rename to zpui/ui/__init__.py
+diff --git a/ui/base_list_ui.py b/zpui/ui/base_list_ui.py
+similarity index 100%
+rename from ui/base_list_ui.py
+rename to zpui/ui/base_list_ui.py
+diff --git a/ui/canvas.py b/zpui/ui/canvas.py
+similarity index 100%
+rename from ui/canvas.py
+rename to zpui/ui/canvas.py
+diff --git a/ui/char_input.py b/zpui/ui/char_input.py
+similarity index 100%
+rename from ui/char_input.py
+rename to zpui/ui/char_input.py
+diff --git a/ui/checkbox.py b/zpui/ui/checkbox.py
+similarity index 100%
+rename from ui/checkbox.py
+rename to zpui/ui/checkbox.py
+diff --git a/ui/config_manager.py b/zpui/ui/config_manager.py
+similarity index 100%
+rename from ui/config_manager.py
+rename to zpui/ui/config_manager.py
+diff --git a/ui/configs/base_config.json b/zpui/ui/configs/base_config.json
+similarity index 100%
+rename from ui/configs/base_config.json
+rename to zpui/ui/configs/base_config.json
+diff --git a/ui/dialog.py b/zpui/ui/dialog.py
+similarity index 100%
+rename from ui/dialog.py
+rename to zpui/ui/dialog.py
+diff --git a/ui/experimental/__init__.py b/zpui/ui/experimental/__init__.py
+similarity index 100%
+rename from ui/experimental/__init__.py
+rename to zpui/ui/experimental/__init__.py
+diff --git a/ui/experimental/keypad_input.py b/zpui/ui/experimental/keypad_input.py
+similarity index 100%
+rename from ui/experimental/keypad_input.py
+rename to zpui/ui/experimental/keypad_input.py
+diff --git a/ui/fonts/Fixedsys62.ttf b/zpui/ui/fonts/Fixedsys62.ttf
+similarity index 100%
+rename from ui/fonts/Fixedsys62.ttf
+rename to zpui/ui/fonts/Fixedsys62.ttf
+diff --git a/ui/fonts/Fixedsys62_readme.txt b/zpui/ui/fonts/Fixedsys62_readme.txt
+similarity index 100%
+rename from ui/fonts/Fixedsys62_readme.txt
+rename to zpui/ui/fonts/Fixedsys62_readme.txt
+diff --git a/ui/funcs.py b/zpui/ui/funcs.py
+similarity index 100%
+rename from ui/funcs.py
+rename to zpui/ui/funcs.py
+diff --git a/ui/input.py b/zpui/ui/input.py
+similarity index 100%
+rename from ui/input.py
+rename to zpui/ui/input.py
+diff --git a/ui/listbox.py b/zpui/ui/listbox.py
+similarity index 100%
+rename from ui/listbox.py
+rename to zpui/ui/listbox.py
+diff --git a/ui/loading_indicators.py b/zpui/ui/loading_indicators.py
+similarity index 100%
+rename from ui/loading_indicators.py
+rename to zpui/ui/loading_indicators.py
+diff --git a/ui/menu.py b/zpui/ui/menu.py
+similarity index 100%
+rename from ui/menu.py
+rename to zpui/ui/menu.py
+diff --git a/ui/number_input.py b/zpui/ui/number_input.py
+similarity index 100%
+rename from ui/number_input.py
+rename to zpui/ui/number_input.py
+diff --git a/ui/numbered_menu.py b/zpui/ui/numbered_menu.py
+similarity index 100%
+rename from ui/numbered_menu.py
+rename to zpui/ui/numbered_menu.py
+diff --git a/ui/numpad_input.py b/zpui/ui/numpad_input.py
+similarity index 100%
+rename from ui/numpad_input.py
+rename to zpui/ui/numpad_input.py
+diff --git a/ui/path_picker.py b/zpui/ui/path_picker.py
+similarity index 100%
+rename from ui/path_picker.py
+rename to zpui/ui/path_picker.py
+diff --git a/ui/printer.py b/zpui/ui/printer.py
+similarity index 100%
+rename from ui/printer.py
+rename to zpui/ui/printer.py
+diff --git a/ui/refresher.py b/zpui/ui/refresher.py
+similarity index 100%
+rename from ui/refresher.py
+rename to zpui/ui/refresher.py
+diff --git a/ui/scrollable_element.py b/zpui/ui/scrollable_element.py
+similarity index 100%
+rename from ui/scrollable_element.py
+rename to zpui/ui/scrollable_element.py
+diff --git a/ui/tests/canvas_1.png b/zpui/ui/tests/canvas_1.png
+similarity index 100%
+rename from ui/tests/canvas_1.png
+rename to zpui/ui/tests/canvas_1.png
+diff --git a/ui/tests/canvas_2.png b/zpui/ui/tests/canvas_2.png
+similarity index 100%
+rename from ui/tests/canvas_2.png
+rename to zpui/ui/tests/canvas_2.png
+diff --git a/ui/tests/canvas_3.png b/zpui/ui/tests/canvas_3.png
+similarity index 100%
+rename from ui/tests/canvas_3.png
+rename to zpui/ui/tests/canvas_3.png
+diff --git a/ui/tests/canvas_4.png b/zpui/ui/tests/canvas_4.png
+similarity index 100%
+rename from ui/tests/canvas_4.png
+rename to zpui/ui/tests/canvas_4.png
+diff --git a/ui/tests/canvas_5.png b/zpui/ui/tests/canvas_5.png
+similarity index 100%
+rename from ui/tests/canvas_5.png
+rename to zpui/ui/tests/canvas_5.png
+diff --git a/ui/tests/canvas_6.png b/zpui/ui/tests/canvas_6.png
+similarity index 100%
+rename from ui/tests/canvas_6.png
+rename to zpui/ui/tests/canvas_6.png
+diff --git a/ui/tests/canvas_7.png b/zpui/ui/tests/canvas_7.png
+similarity index 100%
+rename from ui/tests/canvas_7.png
+rename to zpui/ui/tests/canvas_7.png
+diff --git a/ui/tests/canvas_8.png b/zpui/ui/tests/canvas_8.png
+similarity index 100%
+rename from ui/tests/canvas_8.png
+rename to zpui/ui/tests/canvas_8.png
+diff --git a/ui/tests/test_base_list_ui.py b/zpui/ui/tests/test_base_list_ui.py
+similarity index 100%
+rename from ui/tests/test_base_list_ui.py
+rename to zpui/ui/tests/test_base_list_ui.py
+diff --git a/ui/tests/test_canvas.py b/zpui/ui/tests/test_canvas.py
+similarity index 100%
+rename from ui/tests/test_canvas.py
+rename to zpui/ui/tests/test_canvas.py
+diff --git a/ui/tests/test_char_input.py b/zpui/ui/tests/test_char_input.py
+similarity index 100%
+rename from ui/tests/test_char_input.py
+rename to zpui/ui/tests/test_char_input.py
+diff --git a/ui/tests/test_checkbox.py b/zpui/ui/tests/test_checkbox.py
+similarity index 100%
+rename from ui/tests/test_checkbox.py
+rename to zpui/ui/tests/test_checkbox.py
+diff --git a/ui/tests/test_config_manager.py b/zpui/ui/tests/test_config_manager.py
+similarity index 100%
+rename from ui/tests/test_config_manager.py
+rename to zpui/ui/tests/test_config_manager.py
+diff --git a/ui/tests/test_dialog_box.py b/zpui/ui/tests/test_dialog_box.py
+similarity index 100%
+rename from ui/tests/test_dialog_box.py
+rename to zpui/ui/tests/test_dialog_box.py
+diff --git a/ui/tests/test_menu.py b/zpui/ui/tests/test_menu.py
+similarity index 100%
+rename from ui/tests/test_menu.py
+rename to zpui/ui/tests/test_menu.py
+diff --git a/ui/tests/test_numpad_input.py b/zpui/ui/tests/test_numpad_input.py
+similarity index 100%
+rename from ui/tests/test_numpad_input.py
+rename to zpui/ui/tests/test_numpad_input.py
+diff --git a/ui/tests/test_path_picker.py b/zpui/ui/tests/test_path_picker.py
+similarity index 100%
+rename from ui/tests/test_path_picker.py
+rename to zpui/ui/tests/test_path_picker.py
+diff --git a/ui/tests/test_refresher.py b/zpui/ui/tests/test_refresher.py
+similarity index 100%
+rename from ui/tests/test_refresher.py
+rename to zpui/ui/tests/test_refresher.py
+diff --git a/ui/tests/test_universal_input.py b/zpui/ui/tests/test_universal_input.py
+similarity index 100%
+rename from ui/tests/test_universal_input.py
+rename to zpui/ui/tests/test_universal_input.py
+diff --git a/ui/utils.py b/zpui/ui/utils.py
+similarity index 100%
+rename from ui/utils.py
+rename to zpui/ui/utils.py
+diff --git a/utils/README.md b/zpui/utils/README.md
+similarity index 100%
+rename from utils/README.md
+rename to zpui/utils/README.md
+diff --git a/utils/__init__.py b/zpui/utils/__init__.py
+similarity index 100%
+rename from utils/__init__.py
+rename to zpui/utils/__init__.py
+diff --git a/utils/debug_list_inputs.py b/zpui/utils/debug_list_inputs.py
+similarity index 100%
+rename from utils/debug_list_inputs.py
+rename to zpui/utils/debug_list_inputs.py
+diff --git a/utils/debug_listener.py b/zpui/utils/debug_listener.py
+similarity index 100%
+rename from utils/debug_listener.py
+rename to zpui/utils/debug_listener.py
+diff --git a/utils/rpc_api.py b/zpui/utils/rpc_api.py
+similarity index 100%
+rename from utils/rpc_api.py
+rename to zpui/utils/rpc_api.py
+diff --git a/utils/rpc_client.py b/zpui/utils/rpc_client.py
+similarity index 100%
+rename from utils/rpc_client.py
+rename to zpui/utils/rpc_client.py

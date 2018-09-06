@@ -1,0 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgbase=smspdu
+pkgname=py-smspdu
+pkgver=1.0
+pkgrel=0
+pkgdesc="SMS PDU encoding and decoding, including GSM-0338 character set"
+arch="noarch"
+url="http://pypi.python.org/pypi/smspdu"
+license="BSD"
+makedepends="py-setuptools python2-dev python3-dev"
+source="$pkgname-$pkgver.tar.gz::https://files.pythonhosted.org/packages/d4/ef/f632a98655bfe6ada9eca406c4980fe1ca23f925efd93ab33cd57cd16994/$pkgbase-$pkgver.tar.gz"
+subpackages="py2-${pkgname/py-/}:_py2"
+builddir="$srcdir/$pkgbase-$pkgver"
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="e8e6ac2d0bf2a17c8fbf14fd8e6811d6508e248aedff958800f9a4abf1274c4a76bfc6dc0e31592527655786365b99529cf1b83c99805c77a9ddbe29d422947d  py-smspdu-1.0.tar.gz"

@@ -1,0 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py-spidev
+pkgver=3.3
+pkgrel=0
+pkgdesc="A python module for interfacing with SPI devices from user space via the spidev linux kernel driver"
+arch="noarch"
+url="https://github.com/doceme/py-spidev"
+license="MIT"
+depends="linux-headers"
+makedepends="py-setuptools python2-dev python3-dev linux-headers"
+source="$pkgname-$pkgver.tar.gz::https://github.com/doceme/$pkgname/archive/v$pkgver.tar.gz"
+subpackages="py2-${pkgname/py-/}:_py2:all py3-${pkgname/py-/}:_py3:all"
+options="!check" # No tests available
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="756ace8938d8f60ebf2ea36e3088af0ec8a4c85a520f256829a9c529ae067bc04c4b445512688ee3d4996060285beea053c7f4707f50627b1122a94ee5556ed1  py-spidev-3.3.tar.gz"

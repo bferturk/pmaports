@@ -1,0 +1,47 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py-zerophone-hw
+pkgver=0.3.0
+pkgrel=0
+pkgdesc="ZeroPhone hardware API library for Python"
+arch="armhf"
+url="https://github.com/ZeroPhone/ZeroPhone-API-Python"
+license="GPL-3.0"
+depends="py2-rpigpio"
+makedepends="py-setuptools python2-dev python3-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/zerophone/zerophone-api-python/archive/$pkgver.tar.gz"
+subpackages="py2-${pkgname/py-/}:_py2 py3-${pkgname/py-/}:_py3"
+builddir="$srcdir/ZeroPhone-API-Python-$pkgver"
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+	python setup.py test
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="12acd724c88b72a55531b538978dbbda42a668771309eff0236aa23c9ddde92cc00f531c4169edb49bfce23eb05fc977e1fd6db0d99140afccc90068eb241aca  py-zerophone-hw-0.3.0.tar.gz"

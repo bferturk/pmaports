@@ -1,0 +1,45 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=zpui
+pkgver=0_git20180815
+pkgrel=0
+_commit="a8ddaab62c05765bb4eec61cd354df8633951dee"
+pkgdesc="Official ZeroPhone UI framework, based on pyLCI"
+arch="armhf" # BEcause of py-luma-oled
+url="http://zpui.rtfd.org/"
+license="Apache"
+depends="py-smbus py2-serial py2-nmap py2-vobject py2-pytest py2-jsonrpclib py2-mock py-dbus py2-luma-oled py-smspdu py-zerophone-hw py-otp pygame"
+makedepends="$depends_dev python2 py2-pip"
+source="$pkgname-$_commit.tar.gz::https://github.com/zerophone/$pkgname/archive/$_commit.tar.gz
+	setup-py.patch"
+subpackages="py2-${pkgname/py-/}:_py2"
+builddir="$srcdir/ZPUI-$_commit"
+
+build() {
+	cd "$builddir"
+	python setup.py build
+}
+
+check() {
+	cd "$builddir"
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="a2ea4039230ff21ce900324375c5a7e8a930c61802a36d2ab804544a019ce6fc429041b4ab11313d07c80c002d2a4c475292ad4399f851fd59adf19ff20385dc  zpui-a8ddaab62c05765bb4eec61cd354df8633951dee.tar.gz
+cfcd837d499a0c02c42a53818bf8ad4a4791c038028a16657b4b555217d1307efb53c41e490c8f9eb2fe09311131565d8656cc2c06d1a3a7a666afd840cd4460  setup-py.patch"

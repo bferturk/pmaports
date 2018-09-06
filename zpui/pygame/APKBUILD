@@ -1,0 +1,51 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgbase=pygame_sdl2
+pkgname=pygame
+pkgver=6.99.10.1227
+pkgrel=0
+pkgdesc="A library for making multimedia applications like games built on top of the excellent SDL library"
+arch="noarch"
+url="https://www.pygame.org/"
+license="LGPL-2.1 Zlib"
+depends=""
+makedepends="py-setuptools python2-dev python3-dev freetype-dev sdl2-dev sdl2_image-dev sdl2_mixer-dev sdl2_ttf-dev jpeg-dev cython-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/renpy/$pkgbase/archive/renpy-$pkgver.tar.gz
+ 	0001-remove-mid-and-mod-formats.patch"
+subpackages="py2-${pkgname/py-/}:_py2:all py3-${pkgname/py-/}:_py3:all"
+options="!check" # Broken, requires package to be installed before testing which just doesn't happen
+builddir="$srcdir/$pkgbase-renpy-$pkgver"
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+	python setup.py test
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="0778e732bf80a9f768a96139b44b065049c9b327fe3f6af6f90d82d4231d5b1737650a5f668f8ffc927031791e6234080434e228905234b3f33bb7f0b18990c5  pygame-6.99.10.1227.tar.gz
+2db60eb5935454e29f295961dc34601f329e02c1d8670fc0780ef8d2559435d1ac217df28794151d9c6e7554dfe96f3462603bbdbc8a26578c8683654fcdef97  0001-remove-mid-and-mod-formats.patch"

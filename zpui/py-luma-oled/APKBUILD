@@ -1,0 +1,49 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgbase=luma.oled
+pkgname=py-luma-oled
+pkgver=2.4.1
+pkgrel=0
+pkgdesc="Python module to drive a SSD1306 / SSD1322 / SSD1325 / SSD1327 / SSD1331 / SSD1351 / SH1106 OLED"
+arch="armhf" # Because of py-luma.core
+url="https://luma-oled.readthedocs.io/"
+license="MIT"
+depends="jpeg py-luma-core"
+makedepends="py-setuptools python2-dev python3-dev pytest pytest-cov py-pillow py-smbus2 py-mock py-smbus py-spidev py2-monotonic"
+source="$pkgname-$pkgver.tar.gz::https://github.com/rm-hull/$pkgbase/archive/$pkgver.tar.gz"
+subpackages="py2-${pkgname/py-/}:_py2 py3-${pkgname/py-/}:_py3"
+options="!check" # Broken
+builddir="$srcdir/$pkgbase-$pkgver"
+
+build() {
+	cd "$builddir"
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+	python setup.py test
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_py2() {
+	_py python2
+}
+
+_py3() {
+	_py python3
+}
+
+_py() {
+	local python="$1"
+	pkgdesc="$pkgdesc (for $python)"
+	depends="$depends $python"
+	install_if="$pkgname=$pkgver-r$pkgrel $python"
+	
+	cd "$builddir"
+	$python setup.py install --prefix=/usr --root="$subpkgdir"
+}
+sha512sums="d1fa019bc4541c6168f39f02340f3e03a85e2d6e064e6581391a17a8f00ba7d4a0f35482fbf32705435468856ae48af7f2be71aa36ebb8403f0fdbe7a63cb2c1  py-luma-oled-2.4.1.tar.gz"
