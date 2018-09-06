@@ -8,7 +8,7 @@ pkgdesc="Official ZeroPhone UI framework, based on pyLCI"
 arch="armhf" # BEcause of py-luma-oled
 url="http://zpui.rtfd.org/"
 license="Apache"
-depends="py-smbus py2-serial py2-nmap py2-vobject py2-pytest py2-jsonrpclib py2-mock py-dbus py2-luma-oled py-smspdu py-zerophone-hw py-otp pygame"
+depends="py-smbus py2-serial py2-nmap py2-vobject py2-pytest py2-jsonrpclib py2-mock py-dbus py2-luma-oled py-smspdu py-zerophone-hw py-otp pygame py-gobject3 py-serial"
 makedepends="$depends_dev python2 py2-pip"
 source="$pkgname-$_commit.tar.gz::https://github.com/zerophone/$pkgname/archive/$_commit.tar.gz
 	setup-py.patch"
@@ -17,7 +17,7 @@ builddir="$srcdir/ZPUI-$_commit"
 
 build() {
 	cd "$builddir"
-	python setup.py build
+	python2 setup.py build
 }
 
 check() {

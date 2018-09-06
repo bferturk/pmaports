@@ -16,6 +16,7 @@ builddir="$srcdir/ZeroPhone-API-Python-$pkgver"
 build() {
 	cd "$builddir"
 	python2 setup.py build
+	python3 setup.py build
 }
 
 check() {
