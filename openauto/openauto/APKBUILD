@@ -9,30 +9,27 @@ url="https://github.com/f1xpl/openauto"
 arch="all"
 license="none"
 depends=""
-makedepends="cmake qt5-qtbase-dev qt5-qtmultimedia-dev qt5-qtconnectivity-dev boost-dev protobuf-dev rtaudio-dev libusb-dev aasdk-dev"
-subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+makedepends="cmake qt5-qtbase-dev qt5-qtmultimedia-dev qt5-qtconnectivity-dev boost-dev protobuf-dev rtaudio-dev libusb-dev aasdk-dev aasdk"
 source="$pkgname-$_commit.tar.gz::https://github.com/f1xpl/$pkgname/archive/$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
+options="!check"
 
 build() {
 	cd "$builddir"
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DAASDK_INCLUDE_DIRS="/usr/include" \
+		-DAASDK_INCLUDE_DIRS="/usr/share/include" \
 		-DAASDK_LIBRARIES="/usr/lib/libaasdk.so" \
-		-DAASDK_PROTO_LIBRARIES="/usr/lib/libaasdk_proto.so"
+		-DAASDK_PROTO_LIBRARIES="/usr/lib/libaasdk_proto.so" \
+		-DAASDK_PROTO_INCLUDE_DIRS="/usr/share/include/aasdk_proto"
 	make
-}
-
-check() {
-	cd "$builddir"
-	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	mkdir -p "$pkgdir"/usr/bin
+	mv "$builddir"/bin/* "$pkgdir"/usr/bin
 }
 
 sha512sums="cc3b03a0679e4dd37d7ef84b87365720fc5b80be054fcc3c7d4bffabda3126db3849e854e06c1d144146319c4c4aabac6a444777eee2b60765e05a1e99bc7ec9  openauto-6dc394c11f1a0b09ccb0c5ca90012cd185baebca.tar.gz"

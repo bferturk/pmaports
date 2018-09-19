@@ -37,6 +37,7 @@ package() {
 
 	mv "$builddir"/include "$pkgdir"/usr/share/
 	mv "$builddir"/lib "$pkgdir"/usr/
+	mv "$builddir"/aasdk_proto "$pkgdir"/usr/share/include/
 }
 
 sha512sums="07f6771639d0f7a96572fb0dde9c8d919a99e4eadf95cb971f26ee7a9ba19cd0dbb82f4936f1571fc3d76733d2b0a3e93b32d76cc3a409afc382141b5b72709d  aasdk-2.1.tar.gz"
