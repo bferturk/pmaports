@@ -1,0 +1,56 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=rtaudio
+pkgver=5.0.0
+pkgrel=0
+pkgdesc="AndroidAuto headunit emulator"
+url="https://www.music.mcgill.ca/~gary/rtaudio"
+arch="all"
+license="MIT"
+depends=""
+depends_dev="alsa-lib-dev jack-dev"
+makedepends="$depends_dev autoconf automake libtool doxygen python2-dev"
+subpackages="$pkgname-dev $pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/thestk/$pkgname/archive/v$pkgver.tar.gz"
+
+prepare() {
+	cd "$builddir"
+	./autogen.sh --no-configure
+}
+
+build() {
+	cd "$builddir"
+	
+	./configure --prefix=/usr --with-alsa
+	make
+	
+	cd contrib/python/pyrtaudio
+	python2 setup.py build
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+
+	mkdir -p "$pkgdir/usr/share/doc/$pkgname/html"
+	mkdir -p "$pkgdir/usr/share/doc/$pkgname/images"
+
+	# docs
+	install -t "$pkgdir/usr/share/doc/$pkgname" \
+		-vDm644 readme doc/release.txt
+	
+	# html
+	install -t "$pkgdir/usr/share/doc/$pkgname/html" \
+		-vDm644 doc/html/*
+	install -t "$pkgdir/usr/share/doc/$pkgname/images" \
+		-vDm644 doc/images/*
+	
+	# Python 2 bindings
+	cd contrib/python/pyrtaudio
+	python2 setup.py install --skip-build \
+		--optimize=1 \
+		--prefix=/usr \
+		--root="$pkgdir/"
+}
+
+sha512sums="0bc60c189795626ff65ffaf7c7ae3dd72b4d249fdfe8dc9c3cc4cda8871b8f6ba151c60cd10b81286c3800f326a16028745cf8c67b8eafde0d8a68145ecb2258  rtaudio-5.0.0.tar.gz"

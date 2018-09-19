@@ -1,0 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=aasdk
+pkgver=2.1
+pkgrel=0
+pkgdesc="C++ object-oriented library containing implementation of core AndroidAuto(tm) functionalities needed to build headunit software"
+url="https://github.com/f1xpl/aasdk"
+arch="all"
+license="none"
+depends=""
+depends_dev="protobuf-dev boost-dev libusb-dev"
+makedepends="$depends_dev cmake openssl-dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/f1xpl/$pkgname/archive/v$pkgver.tar.gz"
+options="!check"
+
+build() {
+	cd "$builddir"
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_SKIP_RPATH=TRUE \
+		-DOPENSSL_USE_STATIC_LIBS=TRUE
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+
+	mkdir -p "$pkgdir"/usr/share
+
+	mv "$builddir"/include "$pkgdir"/usr/share/
+	mv "$builddir"/lib "$pkgdir"/usr/
+}
+
+sha512sums="07f6771639d0f7a96572fb0dde9c8d919a99e4eadf95cb971f26ee7a9ba19cd0dbb82f4936f1571fc3d76733d2b0a3e93b32d76cc3a409afc382141b5b72709d  aasdk-2.1.tar.gz"
