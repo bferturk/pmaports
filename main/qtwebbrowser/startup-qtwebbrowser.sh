@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm /tmp/qt-WebBrowser-last-url.txt
+rm -f /tmp/qt-WebBrowser-last-url.txt
 
 if [ ! -f  "/usr/bin/libEGL.so" ]; then  
         sudo ln -s /usr/bin/libEGL.so /usr/lib/libEGL.so                                          
