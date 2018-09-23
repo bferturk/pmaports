@@ -1,8 +1,9 @@
 # Contributor: Pierre Parent < m #at* pierre-parent.fr >
 pkgname=qtwebbrowser
-pkgver=1.1
-_commit=a8c36890a9c9a885d6a8ba415fc9d1b47640518e
-pkgrel=7
+pkgver=1.0
+#commit corresponding to v1.0
+commit=023733af5523a5ad84359926224fa106001215f4
+pkgrel=0
 pkgdesc="Qt web browser"
 url="http://doc.qt.io/QtWebBrowser/"
 arch="all"
@@ -10,17 +11,17 @@ license="GPLv3"
 depends="qt5-qtbase qt5-qtwebengine qt5-qtvirtualkeyboard mesa-dev"
 makedepends="qt5-qtbase-dev qt5-qtwebengine-dev busybox"
 install=""
-source="https://github.com/pparent76/qt-apps-qtwebbrowser/archive/$_commit.tar.gz qtwebbrowser.svg startup-qtwebbrowser.sh qtwebbrowser.desktop"
-builddir="$srcdir/"
+source="https://github.com/qtproject/qt-apps-qtwebbrowser/archive/$commit.tar.gz qtwebbrowser.svg startup-qtwebbrowser.sh qtwebbrowser.desktop 0001-Patch-for-usability-on-postmarketOS.patch"
+builddir="$srcdir/qt-apps-qtwebbrowser-$commit/"
 
 build() {
-	cd "$builddir/qt-apps-qtwebbrowser-$_commit/src/"
+	cd "$builddir/src/"
 	/usr/lib/qt5/bin/qmake src.pro
 	make
 }
 
 package() {
-	cd "$builddir/qt-apps-qtwebbrowser-$_commit/src/"
+	cd "$builddir/src/"
 	mkdir -p $pkgdir/usr/bin/
 	install -D -m644 qtwebbrowser \
         $pkgdir/usr/bin/qtwebbrowser-bin
@@ -37,4 +38,5 @@ package() {
 sha512sums="5e14de5c4c8aec79f3ab25947e1f4091fdbf9a38a894229d1f636dbbb17480970e3c9d7dfdf7cc57e42246a55058025ee3e200145115cfea507f0611aaa3dd77  qtwebbrowser.svg
 0b0edd36a128273f1c4d4287c50c2a6dec22699d651bcd22fba0b0ea25e58243149ff9b21c442a452f0f8b3a94f00667eb06e44d3443133d10157c654ab4ba79  startup-qtwebbrowser.sh
 681a1275f7d09991cdffe9a0f86aa9af22103807d02fd24e806a46e79c8eacb4eea907ef1a677d5eacc379e0666934b346662c99e76026e3dc7820df162a9fe6  qtwebbrowser.desktop
-62e66ca78327e48b7c8643ac7235788e0d428fd1b8298f182fd8052567b5d96b260c99b6a0493a4713ffb2911ceee1afcf4b49a5537d00d1ab614b80b210f6f9  a8c36890a9c9a885d6a8ba415fc9d1b47640518e.tar.gz"
+6802f908973d29dc73f87df831cc4303dfc2eaf11a082341d1ff4618bbbcb712e858cab20bf67ed6cc2ef5eacfb44f80ec04d3765890b49ce510040d01986880  0001-Patch-for-usability-on-postmarketOS.patch
+8f1ff6ef125fff2ae7794319e1ea6c6f1c068cf9aeb3b14516b9bc2326d6a69174970603effe7b35232b431eca24c3e11854c5363989d51e08ae4f597b425161  $commit.tar.gz"
