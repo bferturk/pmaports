@@ -2,14 +2,6 @@
 
 rm -f /tmp/qt-WebBrowser-last-url.txt
 
-if [ ! -f  "/usr/bin/libEGL.so" ]; then  
-        sudo ln -s /usr/bin/libEGL.so /usr/lib/libEGL.so                                          
-fi
-
-if [ ! -f  "/usr/bin/libGLESv2.so" ]; then  
-        sudo ln -s /usr/bin/libGLESv2.so /usr/lib/libGLESv2.so                                          
-fi
-
 crash_at_start=0
 need_to_start=1
 
