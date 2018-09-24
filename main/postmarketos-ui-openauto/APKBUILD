@@ -1,0 +1,21 @@
+pkgname=postmarketos-ui-openauto
+pkgver=1
+pkgrel=0
+pkgdesc="(X11) Android auto emulator, requires usb-otg"
+url="https://github.com/f1xpl/openauto"
+arch="noarch"
+license="?"
+depends="openauto xorg-server mesa-egl"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="start_openauto.sh"
+options="!check"
+
+package() {
+	# Autostart via autologin on TTY0 (until we have a display manager #656)
+	install -D -m644 "$srcdir"/start_openauto.sh \
+		"$pkgdir"/etc/profile.d/start_openauto.sh
+}
+
+sha512sums="181bf71c6206c9c13d1890ce81b028549fbca37dd886c7ff280e691e32fbff6cdaf20d60441e4946a7d2ef16fb1b167944d83fc527b27385b2c9f78376ee8914  start_openauto.sh"
