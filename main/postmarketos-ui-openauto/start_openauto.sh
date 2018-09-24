@@ -5,7 +5,7 @@
 # This is a temporary solution, we'll need something like a
 # display manager in the long run (#656).
 if [ "$(id -u)" = "10000" ] && [ "$(tty)" = "/dev/tty1" ]; then
-	# Start X11 with Mate
+	# Start X11 with with the openauto application
 	startx /usr/bin/autoapp 2>&1 | logger -t "$(whoami):x11"
 
 

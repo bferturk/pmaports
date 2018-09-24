@@ -18,4 +18,4 @@ package() {
 		"$pkgdir"/etc/profile.d/start_openauto.sh
 }
 
-sha512sums="181bf71c6206c9c13d1890ce81b028549fbca37dd886c7ff280e691e32fbff6cdaf20d60441e4946a7d2ef16fb1b167944d83fc527b27385b2c9f78376ee8914  start_openauto.sh"
+sha512sums="ebbc0333cd9ab412a695af89f7a8d394446a32691bdf219806b51e93f83654837e70c1cb62322b28fd438f7a9f30b8dc7c7390676d977b584cfccacda3780dfe  start_openauto.sh"
