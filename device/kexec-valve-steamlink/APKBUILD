@@ -1,0 +1,30 @@
+# Contributor:
+# Maintainer:
+_hash="349773b3ffb5d8e9dc28c817008b761578caedab"
+pkgname=kexec-valve-steamlink
+pkgver=1
+pkgrel=0
+pkgdesc="kexec.ko for the steamlink kernel"
+url="https://github.com/lukas2511/steamlink-sdk"
+arch="armhf"
+license="GPL2"
+depends=""
+makedepends=""
+install=""
+source="$pkgname-${_hash}.tar.gz::https://github.com/lukas2511/steamlink-sdk/archive/${_hash}.tar.gz"
+builddir="$srcdir/"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+check() {
+	cd "$builddir"
+}
+
+package() {
+	cd "$builddir"
+}
+
+sha512sums="3a89886f29782292063d7af090a62576c8baeb469e128285e2b514d602c31a8c3afb080abb8209ef61b7ec6028445f99d69e2f5c7bdea332183d1241dd19a1c1  kexec-valve-steamlink-349773b3ffb5d8e9dc28c817008b761578caedab.tar.gz"

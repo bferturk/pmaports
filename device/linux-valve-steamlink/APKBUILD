@@ -1,0 +1,194 @@
+_flavor=valve-steamlink
+_config="config-${_flavor}.${CARCH}"
+
+pkgname=linux-${_flavor}
+
+pkgver=4.14.72
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=0
+
+arch="armhf"
+pkgdesc="Linux LTS for Marvell Berlin"
+url="https://kernel.org/"
+depends=""
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev libressl-dev file bison flex"
+options="!strip !check !tracedeps"
+install=
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	config-${_flavor}.armhf
+	dts.patch
+"
+
+if [ "${pkgver%.0}" = "$pkgver" ]; then
+	source="$source
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+fi
+subpackages="$pkgname-dev"
+
+license="GPL2"
+_abi_release=${pkgver}
+_carch=${CARCH}
+case "$_carch" in
+aarch64*) _carch="arm64" ;;
+arm*) _carch="arm" ;;
+ppc*) _carch="powerpc" ;;
+s390*) _carch="s390" ;;
+esac
+
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/linux-$_kernver"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+	if [ "$_kernver" != "$pkgver" ]; then
+		msg "Applying patch-$pkgver.xz"
+		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
+	fi
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	mkdir -p "$srcdir"/build
+	cp -v "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		olddefconfig
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		CFLAGS_MODULE=-fno-pic
+}
+
+package() {
+	cd "$srcdir/build/arch/${_carch}/boot"
+
+	if [ "$CARCH" == "aarch64" ]; then
+		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
+			"$pkgdir/boot/vmlinuz-$_flavor"
+	else
+		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+			"$pkgdir/boot/vmlinuz-$_flavor"
+	fi
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+
+	local _install
+	case "$CARCH" in
+	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
+	*)		_install="modules_install" ;;
+	esac
+
+	make -j1 $_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+
+dev() {
+	# copy the only the parts that we really need for build 3rd party
+	# kernel modules and install those as /usr/src/linux-headers,
+	# simlar to what ubuntu does
+	#
+	# this way you dont need to install the 300-400 kernel sources to
+	# build a tiny kernel module
+	#
+	pkgdesc="Headers and script for third party modules for postmarketos kernel"
+	depends="gmp-dev bash perl"
+	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+
+	# first we import config, run prepare to set up for building
+	# external modules, and create the scripts
+	mkdir -p "$dir"
+	cp "$srcdir"/$_config "$dir"/.config
+	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
+		olddefconfig prepare modules_prepare scripts
+
+	# needed for 3rd party modules
+	# https://bugzilla.kernel.org/show_bug.cgi?id=11143
+	case "$CARCH" in
+	ppc*) (cd "$dir" && make arch/powerpc/lib/crtsavres.o);;
+	esac
+
+	# remove the stuff that points to real sources. we want 3rd party
+	# modules to believe this is the soruces
+	rm "$dir"/Makefile "$dir"/source
+
+	# copy the needed stuff from real sources
+	#
+	# this is taken from ubuntu kernel build script
+	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
+
+	cd "$srcdir"/linux-$_kernver
+	find . -path './include/*' -prune \
+		-o -path './scripts/*' -prune -o -type f \
+		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
+		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
+		-print | cpio -pdm "$dir"
+	cp -a scripts include "$dir"
+	find $(find arch -name include -type d -print) -type f \
+		| cpio -pdm "$dir"
+
+	install -Dm644 "$srcdir"/build/Module.symvers \
+		"$dir"/Module.symvers
+
+	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
+	ln -sf /usr/src/linux-headers-${_abi_release} \
+		"$subpkgdir"/lib/modules/${_abi_release}/build
+
+	# cross-compiling: delete binaries with host arch and replace them with
+	# symlinks to binaries with the target arch (packaged in kernel-scripts)
+	if [ -n "$CROSS_COMPILE" ]; then
+		msg "Symlinking binary scripts..."
+		depends="$depends kernel-scripts"
+		local found="false"
+		cd "$dir/scripts"
+		local i
+		for i in $(find . -type f); do
+			local type="$(file -b --mime-type "$i")"
+			[ "$type" != "application/x-pie-executable" ] && continue
+			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
+			ln -svf "$native" "$i"
+			found="true"
+		done
+		if [ "$found" = "false" ]; then
+			error "Failed to symlink binary scripts!"
+			error "Did the mime-type change (see #1659)?"
+			return 1
+		fi
+	fi
+}
+
+sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
+d5b98d2bd4ebc03946068f0f71b1411320b75c8fecbb9505bfba14d4b0376874f13bd12054048bd4c41806489ef9e8579f33322aaf248f2ea51f2bacf5d9f8b5  config-valve-steamlink.armhf
+e71ad8734c8c9a2cd2ce01a27e2a84ed6525554b3f14014c3dba6fe6d5b3911e3fec4383939dd4ca252e8497b8809fd2fe21206cbbc54d8eb1f4a031c9aaaafc  dts.patch
+de7063521534454f17d113af463a2ab4b855ce7c6123ce7bfd34d04e7ab7d286531152844303618f599c8030a5ef0c4a862ada7178a07b82c203e6a395f7ff2c  patch-4.14.72.xz"

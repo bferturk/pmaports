@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-valve-steamlink"
+pkgdesc="Valve Steam Link"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-valve-steamlink mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="1de455607ebf085fb64c83a7e8d7cdc747bd3d4c11d98b6a6daa0ed26ee65c456cb05489921efd6a4946a14844ac1c49d1415f13e8f820bc66600af1a4c03f1b  deviceinfo"
