@@ -12,10 +12,10 @@ depends=""
 makedepends=""
 install=""
 source="$pkgname-${_hash}.tar.gz::https://github.com/lukas2511/steamlink-sdk/archive/${_hash}.tar.gz"
-builddir="$srcdir/"
+builddir="$srcdir/steamlink-sdk-${_hash}"
 
 build() {
-	cd "$builddir"
+	cd "$builddir/ford_kexec"
 	make
 }
 
