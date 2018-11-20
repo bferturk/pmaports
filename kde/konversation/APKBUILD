@@ -1,9 +1,9 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=konversation
-pkgver=1.7.5_git20180628
+pkgver=1.7.5_git20180703
 pkgrel=0
-_commit="b164ed14758eebbb680d0c1a216b0d8a074b2baa"
+_commit="63acdfe89198823739514822f9a2950bf3d4c61b"
 pkgdesc="A user-friendly and fully-featured IRC client"
 arch="all"
 url='https://konversation.kde.org/'
@@ -35,4 +35,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="5430264d1c4073d87168331caab7c6070387ce82a7ffd704b44ed04a7245cc86775a7f1ed1e17f449409c24d13d43e79b752383b592165a4d9f80e9425465bd6  konversation-b164ed14758eebbb680d0c1a216b0d8a074b2baa.tar.gz"
+sha512sums="12cd70fca27e819b4ec107c9154fe4e909be253ac1b2092f63a49362060e368d59cc3d63ce1ac817af5ac4901f6e86313fcfcb0e681d5796037f02deb46f3414  konversation-63acdfe89198823739514822f9a2950bf3d4c61b.tar.gz"
