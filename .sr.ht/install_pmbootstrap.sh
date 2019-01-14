@@ -7,7 +7,7 @@ tag="master"
 
 # Get download URL and pmaports path
 url="https://gitlab.com/postmarketOS/pmbootstrap/-/archive/$tag/pmbootstrap-$tag.tar.bz2"
-pmaports="$(cd $(dirname $0)/..; pwd -P)"
+pmaports="$(cd ..; pwd -P)"
 
 # Set up binfmt_misc
 echo "Setting-up binfmt_misc"
