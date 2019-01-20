@@ -118,8 +118,8 @@ mx6cuboxi)
 	$dryrun dd if=$imagedir/mx6cuboxi/u-boot.img of=$device bs=1k seek=69 status=none
 	;;
 pine64)
-	[ -e "$imagedir/sopine_baseboard" ] || die "PINE A64 images not installed, apk add u-boot-pine64"
-	$dryrun dd if=$imagedir/sopine_baseboard/u-boot-sunxi-with-spl.bin of=$device bs=1024 seek=8 status=none
+	[ -e "$imagedir/pine64-lts" ] || die "PINE A64 images not installed, apk add u-boot-pine64"
+	$dryrun dd if=$imagedir/pine64-lts/u-boot-sunxi-with-spl.bin of=$device bs=1024 seek=8 status=none
 	;;
 esac
 $dryrun sync
