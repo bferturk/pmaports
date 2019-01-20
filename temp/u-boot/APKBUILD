@@ -19,25 +19,27 @@ source="http://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
 	arm-trusted-firmware-${_atfversion}.tar.gz::https://github.com/ARM-software/arm-trusted-firmware/archive/${_atfversion}.tar.gz
 	README.txt
 	update-u-boot
+	0001-sun50i-a64-sync-with-sunxi64-4.20-branch.patch
+	0002-sun50i-a64-sync-with-sunxi64-4.20-dsi-proper-branch.patch
 	"
 builddir="$srcdir"/u-boot-${pkgver//_/-}
 atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
 
+#	cubieboard:Cubieboard,Cubieboard2
+#	cuboxi:mx6cuboxi
+#	raspberrypi:rpi_0_w,rpi,rpi_2,rpi_3_32b
+#	wandboard:wandboard
 case "$CARCH" in
 arm*) board_configs="
 	beagleboard:am335x_boneblack
-	cubieboard:Cubieboard,Cubieboard2
-	cuboxi:mx6cuboxi
-	raspberrypi:rpi_0_w,rpi,rpi_2,rpi_3_32b
-	wandboard:wandboard
 	";;
 aarch64) board_configs="
-	thunderx:thunderx_88xx
-	raspberrypi:rpi_3
-	odroid:odroid-c2
 	pine64:pine64-lts
 	";;
 esac
+#	thunderx:thunderx_88xx
+#	raspberrypi:rpi_3
+#	odroid:odroid-c2
 
 _allboards=""
 for board_config in $board_configs; do
@@ -126,4 +128,6 @@ done
 sha512sums="d9699cd22afe9bc747d64208068c2cf8a2c3143d161ede24536f6fd6adfd6b81e28920589722639e2e48fcf34e8dbde3ead7f691f14cbcc38cd75694d14d719b  u-boot-2019.01.tar.bz2
 732b806bf3a612ded9351226c8fae78d02741220034009350be1c2237341584bcb366c0db2a19b64e4548e9a720d9380d1240680459b831943d3936077eecb13  arm-trusted-firmware-f0bfe15b81e50c6561a3a9a8e269db0267778910.tar.gz
 f8c9bb6e84d6f0620c976ac7ad5dd7ec7ff9dfdd4b1d03d2bf6653e7beccf80bdf2debfc92fb1f696dba92fb40287d3c45897e0078951451d0835cb61a5f16d1  README.txt
-f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot"
+f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot
+cb571aa6d61b63ed25191d7083fe6a957d43886b7827b45467810c28e6b7897ed6aa271cb76ed9cef42f5737fbc068e610ad39a73fb845b9bc7476c424f209e2  0001-sun50i-a64-sync-with-sunxi64-4.20-branch.patch
+aa50cf11e89420d76e72c05b1b9333a165249b1c32005a9dd89892332ff4e8b67cc1d60fa8c19ea7c46ec2df31a6ddd4fa0b82eb66235f27616e4c436dbcbd1d  0002-sun50i-a64-sync-with-sunxi64-4.20-dsi-proper-branch.patch"

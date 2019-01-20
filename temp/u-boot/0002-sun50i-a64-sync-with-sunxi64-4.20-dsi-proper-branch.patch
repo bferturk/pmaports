@@ -1,0 +1,247 @@
+From b8964d553f35f974d023f5dd152ab92cc4bbbe72 Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Sun, 20 Jan 2019 17:21:39 +0100
+Subject: [PATCH 2/2] sun50i-a64: sync with sunxi64-4.20-dsi-proper branch
+
+---
+ arch/arm/dts/sun50i-a64-pine64-plus.dts      | 45 ++++++++++++++++++++
+ arch/arm/dts/sun50i-a64-pinebook.dts         | 10 +++++
+ arch/arm/dts/sun50i-a64-sopine-baseboard.dts | 40 +++++++++++++++++
+ arch/arm/dts/sun50i-a64.dtsi                 | 43 +++++++++++++++++++
+ 4 files changed, 138 insertions(+)
+
+diff --git a/arch/arm/dts/sun50i-a64-pine64-plus.dts b/arch/arm/dts/sun50i-a64-pine64-plus.dts
+index ed715426ff..629b7c92d9 100644
+--- a/arch/arm/dts/sun50i-a64-pine64-plus.dts
++++ b/arch/arm/dts/sun50i-a64-pine64-plus.dts
+@@ -41,14 +41,53 @@
+  */
+ 
+ #include "sun50i-a64-pine64.dts"
++#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "Pine64+";
+ 	compatible = "pine64,pine64-plus", "allwinner,sun50i-a64";
+ 
++	pwm_bl: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <1 2 4 8 16 32 64 128 255>;
++		default-brightness-level = <8>;
++		enable-gpios = <&pio 7 10 GPIO_ACTIVE_HIGH>; /* PH10 */
++	};
++
++
+ 	/* TODO: Camera, touchscreen, etc. */
+ };
+ 
++&de {
++	status = "okay";
++};
++
++&mixer0 {
++	status = "okay";
++};
++
++&tcon0 {
++	status = "okay";
++};
++
++&dphy {
++	status = "okay";
++};
++
++&dsi {
++	status = "okay";
++
++	panel@0 {
++		compatible = "feiyang,fy07024di26a30d", "simple-panel";
++		reg = <0>;
++		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
++		backlight = <&pwm_bl>;
++		avdd-supply = <&reg_dc1sw>;
++		dvdd-supply = <&reg_dldo2>;
++	};
++};
++
+ &emac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&rgmii_pins>;
+@@ -63,3 +102,9 @@
+ 		reg = <1>;
+ 	};
+ };
++
++&r_pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&r_pwm_pin>;
++	status = "okay";
++};
+diff --git a/arch/arm/dts/sun50i-a64-pinebook.dts b/arch/arm/dts/sun50i-a64-pinebook.dts
+index cdd4d6322a..95bcedc13d 100644
+--- a/arch/arm/dts/sun50i-a64-pinebook.dts
++++ b/arch/arm/dts/sun50i-a64-pinebook.dts
+@@ -22,12 +22,22 @@
+ 		ethernet0 = &rtl8723cs;
+ 	};
+ 
++	vdd_bl: regulator@0 {
++		compatible = "regulator-fixed";
++		regulator-name = "bl-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&pio 7 6 GPIO_ACTIVE_HIGH>; /* PH6 */
++		enable-active-high;
++	};
++
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 0 50000 0>;
+ 		brightness-levels = <0 5 10 15 20 30 40 55 70 85 100>;
+ 		default-brightness-level = <2>;
+ 		enable-gpios = <&pio 3 23 GPIO_ACTIVE_HIGH>; /* PD23 */
++		power-supply = <&vdd_bl>;
+ 	};
+ 
+ 	chosen {
+diff --git a/arch/arm/dts/sun50i-a64-sopine-baseboard.dts b/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
+index d43969a202..cca4b53f39 100644
+--- a/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
++++ b/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
+@@ -46,6 +46,7 @@
+ /dts-v1/;
+ 
+ #include "sun50i-a64-sopine.dtsi"
++#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "SoPine with baseboard";
+@@ -78,6 +79,14 @@
+ 		regulator-min-microvolt = <1800000>;
+ 		regulator-max-microvolt = <1800000>;
+ 	};
++
++	pwm_bl: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <1 2 4 8 16 32 64 128 255>;
++		default-brightness-level = <8>;
++		enable-gpios = <&pio 7 10 GPIO_ACTIVE_HIGH>; /* PH10 */
++	};
+ };
+ 
+ &ac_power_supply {
+@@ -108,6 +117,18 @@
+ 	status = "okay";
+ };
+ 
++&mixer0 {
++	status = "okay";
++};
++
++&tcon0 {
++	status = "okay";
++};
++
++&dphy {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -116,6 +137,19 @@
+ 	status = "okay";
+ };
+ 
++&dsi {
++	status = "okay";
++
++	panel@0 {
++		compatible = "feiyang,fy07024di26a30d", "simple-panel";
++		reg = <0>;
++		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
++		backlight = <&pwm_bl>;
++		avdd-supply = <&reg_dc1sw>;
++		dvdd-supply = <&reg_dldo2>;
++	};
++};
++
+ &emac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&rgmii_pins>;
+@@ -252,3 +286,9 @@
+ &usbphy {
+ 	status = "okay";
+ };
++
++&r_pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&r_pwm_pin>;
++	status = "okay";
++};
+diff --git a/arch/arm/dts/sun50i-a64.dtsi b/arch/arm/dts/sun50i-a64.dtsi
+index 5e9e34d873..241118ba95 100644
+--- a/arch/arm/dts/sun50i-a64.dtsi
++++ b/arch/arm/dts/sun50i-a64.dtsi
+@@ -471,6 +471,11 @@
+ 					#address-cells = <1>;
+ 					#size-cells = <0>;
+ 					reg = <1>;
++
++					tcon0_out_dsi: endpoint@1 {
++						reg = <1>;
++						remote-endpoint = <&dsi_in_tcon0>;
++					};
+ 				};
+ 			};
+ 		};
+@@ -873,6 +878,44 @@
+ 			#thermal-sensor-cells = <1>;
+ 		};
+ 
++		dsi: dsi@1ca0000 {
++			compatible = "allwinner,sun50i-a64-mipi-dsi";
++			reg = <0x01ca0000 0x1000>;
++			interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_MIPI_DSI>,
++				 <&ccu CLK_DSI_DPHY>;
++			clock-names = "bus", "mod";
++			resets = <&ccu RST_BUS_MIPI_DSI>;
++			phys = <&dphy>;
++			phy-names = "dphy";
++			status = "disabled";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@0 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <0>;
++
++					dsi_in_tcon0: endpoint {
++						remote-endpoint = <&tcon0_out_dsi>;
++					};
++				};
++			};
++		};
++
++		dphy: d-phy@1ca1000 {
++			compatible = "allwinner,sun50i-a64-mipi-dphy";
++			reg = <0x01ca1000 0x1000>;
++			clocks = <&ccu CLK_BUS_MIPI_DSI>;
++			clock-names = "bus";
++			resets = <&ccu RST_BUS_MIPI_DSI>;
++			status = "disabled";
++			#phy-cells = <0>;
++		};
++
+ 		uart0: serial@1c28000 {
+ 			compatible = "snps,dw-apb-uart";
+ 			reg = <0x01c28000 0x400>;
+-- 
+2.20.1
+

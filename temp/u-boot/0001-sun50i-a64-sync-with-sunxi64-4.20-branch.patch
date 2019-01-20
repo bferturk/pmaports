@@ -1,0 +1,932 @@
+From 35f42350bb26c10a034ef63db1ebe79ae18ece5b Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Sun, 20 Jan 2019 16:55:12 +0100
+Subject: [PATCH 1/2] sun50i-a64: sync with sunxi64-4.20 branch
+
+---
+ arch/arm/dts/axp803.dtsi                     |  33 +++
+ arch/arm/dts/sun50i-a64-pine64-plus.dts      |   2 +-
+ arch/arm/dts/sun50i-a64-pine64.dts           |  67 ++++-
+ arch/arm/dts/sun50i-a64-pinebook-u-boot.dtsi |  15 --
+ arch/arm/dts/sun50i-a64-pinebook.dts         | 151 ++++++++++-
+ arch/arm/dts/sun50i-a64-sopine-baseboard.dts |  74 ++++++
+ arch/arm/dts/sun50i-a64.dtsi                 | 261 ++++++++++++++++++-
+ include/dt-bindings/clock/sun50i-a64-ccu.h   |   4 +
+ 8 files changed, 578 insertions(+), 29 deletions(-)
+ delete mode 100644 arch/arm/dts/sun50i-a64-pinebook-u-boot.dtsi
+
+diff --git a/arch/arm/dts/axp803.dtsi b/arch/arm/dts/axp803.dtsi
+index e5eae8bafc..c3a618e127 100644
+--- a/arch/arm/dts/axp803.dtsi
++++ b/arch/arm/dts/axp803.dtsi
+@@ -49,6 +49,39 @@
+ 	interrupt-controller;
+ 	#interrupt-cells = <1>;
+ 
++	ac_power_supply: ac-power-supply {
++		compatible = "x-powers,axp803-ac-power-supply",
++			     "x-powers,axp813-ac-power-supply";
++		status = "disabled";
++	};
++
++	axp_adc: adc {
++		compatible = "x-powers,axp803-adc", "x-powers,axp813-adc";
++		#io-channel-cells = <1>;
++	};
++
++	axp_gpio: gpio {
++		compatible = "x-powers,axp803-gpio", "x-powers,axp813-gpio";
++		gpio-controller;
++		#gpio-cells = <2>;
++
++		gpio0_ldo: gpio0-ldo {
++			pins = "GPIO0";
++			function = "ldo";
++		};
++
++		gpio1_ldo: gpio1-ldo {
++			pins = "GPIO1";
++			function = "ldo";
++		};
++	};
++
++	battery_power_supply: battery-power-supply {
++		compatible = "x-powers,axp803-battery-power-supply",
++			     "x-powers,axp813-battery-power-supply";
++		status = "disabled";
++	};
++
+ 	regulators {
+ 		/* Default work frequency for buck regulators */
+ 		x-powers,dcdc-freq = <3000>;
+diff --git a/arch/arm/dts/sun50i-a64-pine64-plus.dts b/arch/arm/dts/sun50i-a64-pine64-plus.dts
+index 24f1aac366..ed715426ff 100644
+--- a/arch/arm/dts/sun50i-a64-pine64-plus.dts
++++ b/arch/arm/dts/sun50i-a64-pine64-plus.dts
+@@ -52,7 +52,7 @@
+ &emac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&rgmii_pins>;
+-	phy-mode = "rgmii";
++	phy-mode = "rgmii-txid";
+ 	phy-handle = <&ext_rgmii_phy>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm/dts/sun50i-a64-pine64.dts b/arch/arm/dts/sun50i-a64-pine64.dts
+index c077b6c1f4..480efb9d87 100644
+--- a/arch/arm/dts/sun50i-a64-pine64.dts
++++ b/arch/arm/dts/sun50i-a64-pine64.dts
+@@ -73,6 +73,27 @@
+ 			};
+ 		};
+ 	};
++
++	wifi_pwrseq: wifi_pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
++	};
++};
++
++&codec {
++	status = "okay";
++};
++
++&codec_analog {
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
++&dai {
++	status = "okay";
+ };
+ 
+ &de {
+@@ -118,6 +139,10 @@
+ 	bias-pull-up;
+ };
+ 
++&i2s2 {
++	status = "okay";
++};
++
+ &mdio {
+ 	ext_rmii_phy1: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+@@ -135,6 +160,17 @@
+ 	status = "okay";
+ };
+ 
++&mmc1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc1_pins>;
++	vmmc-supply = <&reg_dldo4>;
++	vqmmc-supply = <&reg_eldo1>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	non-removable;
++	bus-width = <4>;
++	status = "okay";
++};
++
+ &ohci0 {
+ 	status = "okay";
+ };
+@@ -264,6 +300,27 @@
+ 	status = "disabled";
+ };
+ 
++&sound {
++	status = "okay";
++	simple-audio-card,widgets = "Microphone", "Microphone Jack",
++				    "Headphone", "Headphone Jack";
++	simple-audio-card,routing =
++			"Left DAC", "AIF1 Slot 0 Left",
++			"Right DAC", "AIF1 Slot 0 Right",
++			"Speaker", "LINEOUT",
++			"Headphone Jack", "HP",
++			"AIF1 Slot 0 Left ADC", "Left ADC",
++			"AIF1 Slot 0 Right ADC", "Right ADC",
++			"Left ADC", "ADC",
++			"Right ADC", "ADC",
++			"Microphone Jack", "HBIAS",
++			"MIC2", "Microphone Jack";
++};
++
++&sound_hdmi {
++	status = "okay";
++};
++
+ /* On Exp and Euler connectors */
+ &uart0 {
+ 	pinctrl-names = "default";
+@@ -275,7 +332,15 @@
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+-	status = "disabled";
++	status = "okay";
++
++	bluetooth {
++		compatible = "realtek,rtl8723bs-bt";
++		reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
++		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
++		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
++		firmware-postfix = "pine64";
++	};
+ };
+ 
+ /* On Pi-2 connector */
+diff --git a/arch/arm/dts/sun50i-a64-pinebook-u-boot.dtsi b/arch/arm/dts/sun50i-a64-pinebook-u-boot.dtsi
+deleted file mode 100644
+index a99b7171d0..0000000000
+--- a/arch/arm/dts/sun50i-a64-pinebook-u-boot.dtsi
++++ /dev/null
+@@ -1,15 +0,0 @@
+-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+-/*
+- * Copyright (C) 2018 Vasily Khoruzhick <anarsoul@gmail.com>
+- *
+- */
+-
+-/* The ANX6345 eDP-bridge is on r_i2c */
+-&r_i2c {
+-	anx6345: edp-bridge@38 {
+-		compatible = "analogix,anx6345";
+-		reg = <0x38>;
+-		reset-gpios = <&pio 3 24 GPIO_ACTIVE_LOW>; /* PD24 */
+-		status = "okay";
+-	};
+-};
+diff --git a/arch/arm/dts/sun50i-a64-pinebook.dts b/arch/arm/dts/sun50i-a64-pinebook.dts
+index ec537c5297..cdd4d6322a 100644
+--- a/arch/arm/dts/sun50i-a64-pinebook.dts
++++ b/arch/arm/dts/sun50i-a64-pinebook.dts
+@@ -22,22 +22,12 @@
+ 		ethernet0 = &rtl8723cs;
+ 	};
+ 
+-	vdd_bl: regulator@0 {
+-		compatible = "regulator-fixed";
+-		regulator-name = "bl-3v3";
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
+-		gpio = <&pio 7 6 GPIO_ACTIVE_HIGH>; /* PH6 */
+-		enable-active-high;
+-	};
+-
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 0 50000 0>;
+ 		brightness-levels = <0 5 10 15 20 30 40 55 70 85 100>;
+ 		default-brightness-level = <2>;
+ 		enable-gpios = <&pio 3 23 GPIO_ACTIVE_HIGH>; /* PD23 */
+-		power-supply = <&vdd_bl>;
+ 	};
+ 
+ 	chosen {
+@@ -63,6 +53,17 @@
+ 		};
+ 	};
+ 
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "c";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	reg_vcc3v3: vcc3v3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3";
+@@ -70,12 +71,37 @@
+ 		regulator-max-microvolt = <3300000>;
+ 	};
+ 
++	speaker_amp: speaker_amp {
++		compatible = "simple-audio-amplifier";
++		enable-gpios = <&pio 7 7 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	wifi_pwrseq: wifi_pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
+ 	};
+ };
+ 
++&codec {
++	status = "okay";
++};
++
++&codec_analog {
++	status = "okay";
++};
++
++&cpu0 {
++       cpu-supply = <&reg_dcdc2>;
++};
++
++&dai {
++	status = "okay";
++};
++
++&de {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	phys = <&usbphy 0>;
+ 	phy-names = "usb";
+@@ -86,6 +112,25 @@
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_dldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
++&i2s2 {
++	status = "okay";
++};
++
++&mixer0 {
++	status = "okay";
++};
++
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins>;
+@@ -137,6 +182,27 @@
+ 	status = "okay";
+ };
+ 
++&r_i2c {
++	pinctrl-names = "default";
++	pinctrl-0 = <&r_i2c_pins_a>;
++	status = "okay";
++
++	anx6345: anx6345@38 {
++		compatible = "analogix,anx6345";
++		reg = <0x38>;
++		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
++		panel-supply = <&reg_dc1sw>;
++		dvdd25-supply = <&reg_dldo2>;
++		dvdd12-supply = <&reg_fldo1>;
++
++		port {
++			anx6345_in: endpoint {
++				remote-endpoint = <&tcon0_out_anx6345>;
++			};
++		};
++	};
++};
++
+ &r_rsb {
+ 	status = "okay";
+ 
+@@ -158,6 +224,14 @@
+ 
+ #include "axp803.dtsi"
+ 
++&ac_power_supply {
++	status = "okay";
++};
++
++&battery_power_supply {
++	status = "okay";
++};
++
+ &reg_aldo1 {
+ 	regulator-min-microvolt = <2800000>;
+ 	regulator-max-microvolt = <2800000>;
+@@ -277,12 +351,69 @@
+ 	vcc-hdmi-supply = <&reg_dldo1>;
+ };
+ 
++&sound {
++	status = "okay";
++	simple-audio-card,widgets = "Microphone", "Internal Microphone Left",
++				    "Microphone", "Internal Microphone Right",
++				    "Headphone", "Headphone Jack",
++				    "Speaker", "Internal Speaker";
++	simple-audio-card,aux-devs = <&codec_analog>, <&speaker_amp>;
++	simple-audio-card,routing =
++			"Left DAC", "AIF1 Slot 0 Left",
++			"Right DAC", "AIF1 Slot 0 Right",
++			"INL", "LINEOUT",
++			"INR", "LINEOUT",
++			"Internal Speaker", "OUTL",
++			"Internal Speaker", "OUTR",
++			"Headphone Jack", "HP",
++			"AIF1 Slot 0 Left ADC", "Left ADC",
++			"AIF1 Slot 0 Right ADC", "Right ADC",
++			"Left ADC", "ADC",
++			"Right ADC", "ADC",
++			"Internal Microphone Left", "MBIAS",
++			"MIC1", "Internal Microphone Left",
++			"Internal Microphone Right", "HBIAS",
++			"MIC2", "Internal Microphone Right";
++};
++
++&sound_hdmi {
++	status = "okay";
++};
++
++&tcon0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&lcd_rgb666_pins>;
++
++	status = "okay";
++};
++
++&tcon0_out {
++	tcon0_out_anx6345: endpoint@0 {
++		reg = <0>;
++		remote-endpoint = <&anx6345_in>;
++	};
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
+ 	status = "okay";
+ };
+ 
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
++	status = "okay";
++
++	bluetooth {
++		compatible = "realtek,rtl8723cs-bt";
++		reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
++		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_LOW>; /* PL5 */
++		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
++		firmware-postfix = "pinebook";
++	};
++};
++
+ &usb_otg {
+ 	dr_mode = "host";
+ };
+diff --git a/arch/arm/dts/sun50i-a64-sopine-baseboard.dts b/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
+index 53fcc9098d..d43969a202 100644
+--- a/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
++++ b/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
+@@ -80,6 +80,30 @@
+ 	};
+ };
+ 
++&ac_power_supply {
++	status = "okay";
++};
++
++&battery_power_supply {
++	status = "okay";
++};
++
++&codec {
++	status = "okay";
++};
++
++&codec_analog {
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
++&dai {
++	status = "okay";
++};
++
+ &de {
+ 	status = "okay";
+ };
+@@ -112,6 +136,10 @@
+ 	};
+ };
+ 
++&i2s2 {
++	status = "okay";
++};
++
+ &mdio {
+ 	ext_rgmii_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+@@ -119,6 +147,16 @@
+ 	};
+ };
+ 
++&mmc1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc1_pins>;
++	vmmc-supply = <&reg_dldo4>;
++	vqmmc-supply = <&reg_eldo1>;
++	non-removable;
++	bus-width = <4>;
++	status = "okay";
++};
++
+ &mmc2 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc2_pins>;
+@@ -127,6 +165,7 @@
+ 	bus-width = <8>;
+ 	non-removable;
+ 	cap-mmc-hw-reset;
++	mmc-hs200-1_8v;
+ 	status = "okay";
+ };
+ 
+@@ -164,12 +203,47 @@
+ 	vcc-hdmi-supply = <&reg_dldo1>;
+ };
+ 
++&sound {
++	status = "okay";
++	simple-audio-card,widgets = "Microphone", "Microphone Jack",
++				    "Headphone", "Headphone Jack";
++	simple-audio-card,routing =
++			"Left DAC", "AIF1 Slot 0 Left",
++			"Right DAC", "AIF1 Slot 0 Right",
++			"Speaker", "LINEOUT",
++			"Headphone Jack", "HP",
++			"AIF1 Slot 0 Left ADC", "Left ADC",
++			"AIF1 Slot 0 Right ADC", "Right ADC",
++			"Left ADC", "ADC",
++			"Right ADC", "ADC",
++			"Microphone Jack", "HBIAS",
++			"MIC2", "Microphone Jack";
++};
++
++&sound_hdmi {
++	status = "okay";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
+ 	status = "okay";
+ };
+ 
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
++	status = "okay";
++
++	bluetooth {
++		compatible = "realtek,rtl8723bs-bt";
++		reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
++		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
++		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
++		firmware-postfix = "pine64";
++	};
++};
++
+ &usb_otg {
+ 	dr_mode = "host";
+ 	status = "okay";
+diff --git a/arch/arm/dts/sun50i-a64.dtsi b/arch/arm/dts/sun50i-a64.dtsi
+index ff41abc96a..5e9e34d873 100644
+--- a/arch/arm/dts/sun50i-a64.dtsi
++++ b/arch/arm/dts/sun50i-a64.dtsi
+@@ -49,6 +49,7 @@
+ #include <dt-bindings/reset/sun50i-a64-ccu.h>
+ #include <dt-bindings/reset/sun8i-de2.h>
+ #include <dt-bindings/reset/sun8i-r-ccu.h>
++#include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+ 	interrupt-parent = <&gic>;
+@@ -79,6 +80,52 @@
+ 		};
+ 	};
+ 
++	cpu0_opp_table: opp_table0 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp-648000000 {
++			opp-hz = /bits/ 64 <648000000>;
++			opp-microvolt = <1040000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-816000000 {
++			opp-hz = /bits/ 64 <816000000>;
++			opp-microvolt = <1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-912000000 {
++			opp-hz = /bits/ 64 <912000000>;
++			opp-microvolt = <1120000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-960000000 {
++			opp-hz = /bits/ 64 <960000000>;
++			opp-microvolt = <1160000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-1008000000 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <1200000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-1056000000 {
++			opp-hz = /bits/ 64 <1056000000>;
++			opp-microvolt = <1240000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-1104000000 {
++			opp-hz = /bits/ 64 <1104000000>;
++			opp-microvolt = <1260000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++		opp-1152000000 {
++			opp-hz = /bits/ 64 <1152000000>;
++			opp-microvolt = <1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++	};
++
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -89,6 +136,10 @@
+ 			reg = <0>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
++			clocks = <&ccu CLK_CPUX>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu0_opp_table>;
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -97,6 +148,7 @@
+ 			reg = <1>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -105,6 +157,7 @@
+ 			reg = <2>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -113,6 +166,7 @@
+ 			reg = <3>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
++			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		L2: l2-cache {
+@@ -155,6 +209,34 @@
+ 		method = "smc";
+ 	};
+ 
++	sound: sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "sun50i-a64-audio";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,frame-master = <&cpudai>;
++		simple-audio-card,bitclock-master = <&cpudai>;
++		simple-audio-card,mclk-fs = <512>;
++		simple-audio-card,aux-devs = <&codec_analog>;
++		simple-audio-card,routing =
++				"Left DAC", "AIF1 Slot 0 Left",
++				"Right DAC", "AIF1 Slot 0 Right",
++				"AIF1 Slot 0 Left ADC", "Left ADC",
++				"AIF1 Slot 0 Right ADC", "Right ADC",
++				"Left ADC", "ADC",
++				"Right ADC", "ADC",
++				"MIC1", "Mic",
++				"MIC2", "Headset Mic";
++		status = "disabled";
++
++		cpudai: simple-audio-card,cpu {
++			sound-dai = <&dai>;
++		};
++
++		link_codec: simple-audio-card,codec {
++			sound-dai = <&codec>;
++		};
++	};
++
+ 	sound_spdif {
+ 		compatible = "simple-audio-card";
+ 		simple-audio-card,name = "On-board SPDIF";
+@@ -173,8 +255,77 @@
+ 		compatible = "linux,spdif-dit";
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		cma: linux,cma {
++			compatible = "shared-dma-pool";
++			reusable;
++			size = <0x4000000>;
++			alignment = <0x2000>;
++			linux,cma-default;
++		};
++	};
++
++	thermal-zones {
++		cpu_thermal: cpu0-thermal {
++			/* milliseconds */
++			polling-delay-passive = <250>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths 0>;
++
++			cooling-maps {
++				map0 {
++					trip = <&cpu_alert0>;
++					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++				map1 {
++					trip = <&cpu_alert1>;
++					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++			};
++			trips {
++				cpu_alert0: cpu_alert0 {
++					/* milliCelsius */
++					temperature = <75000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++
++				cpu_alert1: cpu_alert1 {
++					/* milliCelsius */
++					temperature = <90000>;
++					hysteresis = <2000>;
++					type = "hot";
++				};
++
++				cpu_crit: cpu_crit {
++					/* milliCelsius */
++					temperature = <110000>;
++					hysteresis = <2000>;
++					type = "critical";
++				};
++			};
++		};
++		gpu0_thermal: gpu0-thermal {
++			/* milliseconds */
++			polling-delay-passive = <250>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths 1>;
++		};
++		gpu1_thermal: gpu1-thermal {
++			/* milliseconds */
++			polling-delay-passive = <250>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths 2>;
++		};
++	};
++
+ 	timer {
+ 		compatible = "arm,armv8-timer";
++		allwinner,sun50i-a64-unstable-timer;
+ 		interrupts = <GIC_PPI 13
+ 			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
+ 			     <GIC_PPI 14
+@@ -259,8 +410,7 @@
+ 		};
+ 
+ 		syscon: syscon@1c00000 {
+-			compatible = "allwinner,sun50i-a64-system-control",
+-				"syscon";
++			compatible = "allwinner,sun50i-a64-system-control";
+ 			reg = <0x01c00000 0x1000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+@@ -519,6 +669,15 @@
+ 				function = "i2c1";
+ 			};
+ 
++			lcd_rgb666_pins: lcd-rgb666 {
++				pins = "PD0", "PD1", "PD2", "PD3", "PD4",
++				       "PD5", "PD6", "PD7", "PD8", "PD9",
++				       "PD10", "PD11", "PD12", "PD13",
++				       "PD14", "PD15", "PD16", "PD17",
++				       "PD18", "PD19", "PD20", "PD21";
++				function = "lcd0";
++			};
++
+ 			mmc0_pins: mmc0-pins {
+ 				pins = "PF0", "PF1", "PF2", "PF3",
+ 				       "PF4", "PF5";
+@@ -666,6 +825,54 @@
+ 			status = "disabled";
+ 		};
+ 
++		i2s2: i2s@1c22800 {
++			#sound-dai-cells = <0>;
++			compatible = "allwinner,sun8i-h3-i2s";
++			reg = <0x01c22800 0x400>;
++			interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_I2S2>, <&ccu CLK_I2S2>;
++			clock-names = "apb", "mod";
++			dmas = <&dma 27>;
++			resets = <&ccu RST_BUS_I2S2>;
++			dma-names = "tx";
++			status = "disabled";
++		};
++
++		dai: dai@1c22c00 {
++			#sound-dai-cells = <0>;
++			compatible = "allwinner,sun50i-a64-codec-i2s";
++			reg = <0x01c22c00 0x200>;
++			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_CODEC>, <&ccu CLK_AC_DIG>;
++			clock-names = "apb", "mod";
++			resets = <&ccu RST_BUS_CODEC>;
++			reset-names = "rst";
++			dmas = <&dma 15>, <&dma 15>;
++			dma-names = "rx", "tx";
++			status = "disabled";
++		};
++
++		codec: codec@1c22e00 {
++			#sound-dai-cells = <0>;
++			compatible = "allwinner,sun8i-a33-codec";
++			reg = <0x01c22e00 0x600>;
++			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_CODEC>, <&ccu CLK_AC_DIG>;
++			clock-names = "bus", "mod";
++			status = "disabled";
++		};
++
++		ths: thermal-sensor@1c25000 {
++			compatible = "allwinner,sun50i-a64-ths";
++			reg = <0x01c25000 0x100>;
++			interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
++			clock-names = "bus", "mod";
++			resets = <&ccu RST_BUS_THS>;
++			#io-channel-cells = <0>;
++			#thermal-sensor-cells = <1>;
++		};
++
+ 		uart0: serial@1c28000 {
+ 			compatible = "snps,dw-apb-uart";
+ 			reg = <0x01c28000 0x400>;
+@@ -808,6 +1015,33 @@
+ 			};
+ 		};
+ 
++		mali: gpu@1c40000 {
++			compatible = "allwinner,sun50i-a64-mali",
++				     "allwinner,sun7i-a20-mali", "arm,mali-400";
++			reg = <0x01c40000 0x10000>;
++			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "gp",
++					  "gpmmu",
++					  "pp0",
++					  "ppmmu0",
++					  "pp1",
++					  "ppmmu1",
++					  "pmu";
++			clocks = <&ccu CLK_BUS_GPU>, <&ccu CLK_GPU>;
++			clock-names = "bus", "core";
++			resets = <&ccu RST_BUS_GPU>;
++			memory-region = <&cma>;
++
++			assigned-clocks = <&ccu CLK_GPU>;
++			assigned-clock-rates = <384000000>;
++		};
++
+ 		gic: interrupt-controller@1c81000 {
+ 			compatible = "arm,gic-400";
+ 			reg = <0x01c81000 0x1000>,
+@@ -831,6 +1065,7 @@
+ 		};
+ 
+ 		hdmi: hdmi@1ee0000 {
++			#sound-dai-cells = <0>;
+ 			compatible = "allwinner,sun50i-a64-dw-hdmi",
+ 				     "allwinner,sun8i-a83t-dw-hdmi";
+ 			reg = <0x01ee0000 0x10000>;
+@@ -874,6 +1109,22 @@
+ 			#phy-cells = <0>;
+ 		};
+ 
++		sound_hdmi: sound_hdmi {
++			compatible = "simple-audio-card";
++			simple-audio-card,format = "i2s";
++			simple-audio-card,name = "allwinner,hdmi";
++			simple-audio-card,mclk-fs = <256>;
++			status = "disabled";
++
++			simple-audio-card,codec {
++				sound-dai = <&hdmi>;
++			};
++
++			simple-audio-card,cpu {
++				sound-dai = <&i2s2>;
++			};
++		};
++
+ 		rtc: rtc@1f00000 {
+ 			compatible = "allwinner,sun6i-a31-rtc";
+ 			reg = <0x01f00000 0x54>;
+@@ -903,6 +1154,12 @@
+ 			#reset-cells = <1>;
+ 		};
+ 
++		codec_analog: codec-analog@1f015c0 {
++			compatible = "allwinner,sun50i-a64-codec-analog";
++			reg = <0x01f015c0 0x4>;
++			status = "disabled";
++		};
++
+ 		r_i2c: i2c@1f02400 {
+ 			compatible = "allwinner,sun50i-a64-i2c",
+ 				     "allwinner,sun6i-a31-i2c";
+diff --git a/include/dt-bindings/clock/sun50i-a64-ccu.h b/include/dt-bindings/clock/sun50i-a64-ccu.h
+index 370c0a0473..e512a1c9b0 100644
+--- a/include/dt-bindings/clock/sun50i-a64-ccu.h
++++ b/include/dt-bindings/clock/sun50i-a64-ccu.h
+@@ -43,6 +43,10 @@
+ #ifndef _DT_BINDINGS_CLK_SUN50I_A64_H_
+ #define _DT_BINDINGS_CLK_SUN50I_A64_H_
+ 
++#define CLK_PLL_VIDEO0		7
++#define CLK_PLL_PERIPH0		11
++
++#define CLK_CPUX		21
+ #define CLK_BUS_MIPI_DSI	28
+ #define CLK_BUS_CE		29
+ #define CLK_BUS_DMA		30
+-- 
+2.20.1
+
