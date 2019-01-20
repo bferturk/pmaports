@@ -1,0 +1,46 @@
+From d50f45f113970b54dc0ced52a256fab18c78c8c6 Mon Sep 17 00:00:00 2001
+From: Jagan Teki <jagan@amarulasolutions.com>
+Date: Sat, 15 Dec 2018 02:11:00 +0530
+Subject: [PATCH 1/3] dt-bindings: panel: Add Feiyang FY07024DI26A30-D MIPI-DSI
+ LCD panel
+
+Feiyang FY07024DI26A30-D is 1024x600, 4-lane MIPI-DSI LCD panel.
+
+Add dt-bingings for it.
+
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../display/panel/feiyang,fy07024di26a30d.txt | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.txt
+
+diff --git a/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.txt b/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.txt
+new file mode 100644
+index 000000000000..82caa7b65ae8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.txt
+@@ -0,0 +1,20 @@
++Feiyang FY07024DI26A30-D 7" MIPI-DSI LCD Panel
++
++Required properties:
++- compatible: must be "feiyang,fy07024di26a30d"
++- reg: DSI virtual channel used by that screen
++- avdd-supply: analog regulator dc1 switch
++- dvdd-supply: 3v3 digital regulator
++- reset-gpios: a GPIO phandle for the reset pin
++
++Optional properties:
++- backlight: phandle for the backlight control.
++
++panel@0 {
++	compatible = "feiyang,fy07024di26a30d";
++	reg = <0>;
++	avdd-supply = <&reg_dc1sw>;
++	dvdd-supply = <&reg_dldo2>;
++	reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* LCD-RST: PD24 */
++	backlight = <&backlight>;
++};
+-- 
+2.20.1
+

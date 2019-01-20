@@ -17,6 +17,9 @@ _commit="585a14815d2a2620c2b673d26147ceb4491dbf65"
 source="
 	linux-${_commit}.tar.gz::https://github.com/anarsoul/linux-2.6/archive/${_commit}.tar.gz
 	config-${_flavor}.aarch64
+	0001-dt-bindings-panel-Add-Feiyang-FY07024DI26A30-D-MIPI-.patch
+	0002-drm-panel-Add-Feiyang-FY07024DI26A30-D-MIPI-DSI-LCD-.patch
+	0003-Squash-of-the-following-DSI-related-commits.patch
 "
 
 subpackages="$pkgname-dev"
@@ -177,4 +180,7 @@ dev() {
 	fi
 }
 sha512sums="c8df91d946f0121f38992bddf4691b9fb999162424461c063851a685cae8329a1fc5a6add73100be197f899b6ccdb18faff2480161f5d24ce8996f35881e30fb  linux-585a14815d2a2620c2b673d26147ceb4491dbf65.tar.gz
-2a92dcf0851eb08718d6a1a20210a5efd8ba4747be0e0cedb0fb5f5f64efd3ef3d5b1e05e1ba87385c76a192c55ea266cd2fd133e860d6db227d7650c3972a1a  config-postmarketos-allwinner.aarch64"
+b12a9609517823926fffbb2e62d0e5debc5f51da7e942173d8a84556a82a6223f2f4b7ccf58fe604a2fef72a3a7900aa7c8182a712fe4282c8309ac18b390c03  config-postmarketos-allwinner.aarch64
+cc1e42ad169ed8628c025d77e175943889c605ca3c67e08a3f82456aa0fcbe25dcb7dab5747848c8f6265d02f04b5ce8e16f7d55d0a03018c25d10346209fb9f  0001-dt-bindings-panel-Add-Feiyang-FY07024DI26A30-D-MIPI-.patch
+00bcd9d25409d051015d913ac2002d73a05f1650ba99670c510a34f86df4e51f88e6c6981b8e65239a8d4113eadc24e1ea9dbd8f1b6d8c0344b481d404a88426  0002-drm-panel-Add-Feiyang-FY07024DI26A30-D-MIPI-DSI-LCD-.patch
+b53ad75ce0772743eb6ea20432436acc9ff0244e9393a10ccf663e3c9057183441e65e1e6d13b8513017d3ae0f8e0422478acc84477538480412c76061cfb8c9  0003-Squash-of-the-following-DSI-related-commits.patch"
