@@ -21,6 +21,7 @@ source="http://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
 	update-u-boot
 	0001-sun50i-a64-sync-with-sunxi64-4.20-branch.patch
 	0002-sun50i-a64-sync-with-sunxi64-4.20-dsi-proper-branch.patch
+	0003-sun50i-a64-sync-with-amarula-WIP-A64-DSI-V3-branch.patch
 	"
 builddir="$srcdir"/u-boot-${pkgver//_/-}
 atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
@@ -128,6 +129,7 @@ done
 sha512sums="d9699cd22afe9bc747d64208068c2cf8a2c3143d161ede24536f6fd6adfd6b81e28920589722639e2e48fcf34e8dbde3ead7f691f14cbcc38cd75694d14d719b  u-boot-2019.01.tar.bz2
 732b806bf3a612ded9351226c8fae78d02741220034009350be1c2237341584bcb366c0db2a19b64e4548e9a720d9380d1240680459b831943d3936077eecb13  arm-trusted-firmware-f0bfe15b81e50c6561a3a9a8e269db0267778910.tar.gz
 f8c9bb6e84d6f0620c976ac7ad5dd7ec7ff9dfdd4b1d03d2bf6653e7beccf80bdf2debfc92fb1f696dba92fb40287d3c45897e0078951451d0835cb61a5f16d1  README.txt
-f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot
-cb571aa6d61b63ed25191d7083fe6a957d43886b7827b45467810c28e6b7897ed6aa271cb76ed9cef42f5737fbc068e610ad39a73fb845b9bc7476c424f209e2  0001-sun50i-a64-sync-with-sunxi64-4.20-branch.patch
-aa50cf11e89420d76e72c05b1b9333a165249b1c32005a9dd89892332ff4e8b67cc1d60fa8c19ea7c46ec2df31a6ddd4fa0b82eb66235f27616e4c436dbcbd1d  0002-sun50i-a64-sync-with-sunxi64-4.20-dsi-proper-branch.patch"
+72a60016e5bb855bc92152a5183ef029bff45aa2bd7793888d7d5f24f23127da295757dc8e32dec0acc0e653550d3fa3274b8a4ef0b6c5088aa9d578b2f4aa29  update-u-boot
+74a120d5fa904e4150f9a32c6e8e44fc0a4e2623dceb066671c4b4f048432f82527f54464e3b74691e3dddb9dfc080412d6092986691ce59d27abc66996092f5  0001-sun50i-a64-sync-with-sunxi64-4.20-branch.patch
+56c00cfe3db95bd6716fea416fdedf8d773fc563d49b28d8f7790a90252bceed4313734b8d5590d275e72608ce7384280acb1872427dba24d43d21afa28d405e  0002-sun50i-a64-sync-with-sunxi64-4.20-dsi-proper-branch.patch
+f41796654ab587d62319d465f5b2b8f15bce7c22354f758448193eba0d5d8105156938a82d4050d3844d98d313b1108f3cc5f7fa173b26f6d0d80bb375550c07  0003-sun50i-a64-sync-with-amarula-WIP-A64-DSI-V3-branch.patch"

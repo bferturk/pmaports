@@ -1,7 +1,7 @@
 From b8964d553f35f974d023f5dd152ab92cc4bbbe72 Mon Sep 17 00:00:00 2001
 From: Luca Weiss <luca@z3ntu.xyz>
 Date: Sun, 20 Jan 2019 17:21:39 +0100
-Subject: [PATCH 2/2] sun50i-a64: sync with sunxi64-4.20-dsi-proper branch
+Subject: [PATCH 2/3] sun50i-a64: sync with sunxi64-4.20-dsi-proper branch
 
 ---
  arch/arm/dts/sun50i-a64-pine64-plus.dts      | 45 ++++++++++++++++++++

@@ -1,0 +1,1564 @@
+From 7ec6e19d172feb34a394685f0a89703e2c558b8b Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Tue, 22 Jan 2019 17:05:03 +0100
+Subject: [PATCH 3/3] sun50i-a64: sync with amarula/WIP-A64-DSI-V3 branch
+
+---
+ arch/arm/dts/axp803.dtsi                     |  26 +-
+ arch/arm/dts/sun50i-a64-amarula-relic.dts    | 165 +++++++++++
+ arch/arm/dts/sun50i-a64-bananapi-m64.dts     | 135 +++++++++
+ arch/arm/dts/sun50i-a64-pine64-lts.dts       |  37 +++
+ arch/arm/dts/sun50i-a64-pine64-plus.dts      |  47 +--
+ arch/arm/dts/sun50i-a64-pine64.dts           |  52 +---
+ arch/arm/dts/sun50i-a64-pinebook.dts         | 130 ++-------
+ arch/arm/dts/sun50i-a64-sopine-baseboard.dts |  90 +-----
+ arch/arm/dts/sun50i-a64-sopine.dtsi          |   4 +
+ arch/arm/dts/sun50i-a64.dtsi                 | 291 +++++--------------
+ 10 files changed, 444 insertions(+), 533 deletions(-)
+
+diff --git a/arch/arm/dts/axp803.dtsi b/arch/arm/dts/axp803.dtsi
+index c3a618e127..b0d6b3c3cf 100644
+--- a/arch/arm/dts/axp803.dtsi
++++ b/arch/arm/dts/axp803.dtsi
+@@ -49,19 +49,9 @@
+ 	interrupt-controller;
+ 	#interrupt-cells = <1>;
+ 
+-	ac_power_supply: ac-power-supply {
+-		compatible = "x-powers,axp803-ac-power-supply",
+-			     "x-powers,axp813-ac-power-supply";
+-		status = "disabled";
+-	};
+-
+-	axp_adc: adc {
+-		compatible = "x-powers,axp803-adc", "x-powers,axp813-adc";
+-		#io-channel-cells = <1>;
+-	};
+-
+-	axp_gpio: gpio {
+-		compatible = "x-powers,axp803-gpio", "x-powers,axp813-gpio";
++	axp_gpio: axp-gpio {
++		compatible = "x-powers,axp803-gpio",
++			     "x-powers,axp813-gpio";
+ 		gpio-controller;
+ 		#gpio-cells = <2>;
+ 
+@@ -76,12 +66,6 @@
+ 		};
+ 	};
+ 
+-	battery_power_supply: battery-power-supply {
+-		compatible = "x-powers,axp803-battery-power-supply",
+-			     "x-powers,axp813-battery-power-supply";
+-		status = "disabled";
+-	};
+-
+ 	regulators {
+ 		/* Default work frequency for buck regulators */
+ 		x-powers,dcdc-freq = <3000>;
+@@ -163,12 +147,16 @@
+ 		};
+ 
+ 		reg_ldo_io0: ldo-io0 {
++			pinctrl-names = "default";
++			pinctrl-0 = <&gpio0_ldo>;
+ 			regulator-name = "ldo-io0";
+ 			status = "disabled";
+ 		};
+ 
+ 		reg_ldo_io1: ldo-io1 {
+ 			regulator-name = "ldo-io1";
++			pinctrl-names = "default";
++			pinctrl-0 = <&gpio1_ldo>;
+ 			status = "disabled";
+ 		};
+ 
+diff --git a/arch/arm/dts/sun50i-a64-amarula-relic.dts b/arch/arm/dts/sun50i-a64-amarula-relic.dts
+index 6cb2b7f0c8..265847645f 100644
+--- a/arch/arm/dts/sun50i-a64-amarula-relic.dts
++++ b/arch/arm/dts/sun50i-a64-amarula-relic.dts
+@@ -9,6 +9,7 @@
+ #include "sun50i-a64.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "Amarula A64-Relic";
+@@ -18,22 +19,165 @@
+ 		serial0 = &uart0;
+ 	};
+ 
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <1 2 4 8 16 32 64 128 512>;
++		default-brightness-level = <2>;
++		enable-gpios = <&pio 3 23 GPIO_ACTIVE_HIGH>; /* LCD-BL-EN: PD23 */
++	};
++
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	i2c-csi {
++		compatible = "i2c-gpio";
++		sda-gpios = <&pio 4 13 GPIO_ACTIVE_HIGH>; /* CSI-SDA: PE13 */
++		scl-gpios = <&pio 4 12 GPIO_ACTIVE_HIGH>; /* CSI-SCK: PE12 */
++		i2c-gpio,delay-us = <5>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ov5640: camera@3c {
++			compatible = "ovti,ov5640";
++			reg = <0x3c>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&csi_mclk_pin>;
++			clocks = <&ccu CLK_CSI_MCLK>;
++			clock-names = "xclk";
++
++			AVDD-supply = <&reg_aldo1>;
++			DOVDD-supply = <&reg_dldo3>;
++			DVDD-supply = <&reg_eldo3>;
++			reset-gpios = <&pio 4 14 GPIO_ACTIVE_LOW>; /* CSI-RST-R: PE14 */
++			powerdown-gpios = <&pio 4 15 GPIO_ACTIVE_HIGH>; /* CSI-STBY-R: PE15 */
++
++			port {
++				ov5640_ep: endpoint {
++					remote-endpoint = <&csi_ep>;
++					bus-width = <8>;
++					hsync-active = <1>; /* Active high */
++					vsync-active = <0>; /* Active low */
++					data-active = <1>;  /* Active high */
++					pclk-sample = <1>;  /* Rising */
++				};
++			};
++		};
++	};
++
+ 	wifi_pwrseq: wifi-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		clocks = <&rtc 1>;
+ 		clock-names = "ext_clock";
+ 		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* WL-PMU-EN: PL2 */
+ 	};
++
++	speaker_amp: audio-amplifier {
++		compatible = "simple-audio-amplifier";
++		/*
++		 * TODO This is actually a fixed regulator controlled by
++		 * the GPIO line on the PMIC. This should be corrected
++		 * once GPIO support is added for this PMIC.
++		 */
++		VCC-supply = <&reg_ldo_io0>;
++		enable-gpios = <&pio 7 7 GPIO_ACTIVE_HIGH>; /* PA-SHDN: PH7 */
++		sound-name-prefix = "Speaker Amp";
++	};
++};
++
++&csi {
++	status = "okay";
++
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		csi_ep: endpoint {
++			remote-endpoint = <&ov5640_ep>;
++			bus-width = <8>;
++			hsync-active = <1>; /* Active high */
++			vsync-active = <0>; /* Active low */
++			data-active = <1>;  /* Active high */
++			pclk-sample = <1>;  /* Rising */
++		};
++	};
++};
++
++&codec {
++	status = "okay";
++};
++
++&codec_analog {
++	hpvcc-supply = <&reg_eldo1>;
++	status = "okay";
++};
++
++&dai {
++	status = "okay";
++};
++
++&de {
++	status = "okay";
++};
++
++&dphy {
++	status = "okay";
++};
++
++&dsi {
++	vcc-dsi-supply = <&reg_dldo1>;
++	status = "okay";
++
++	panel@0 {
++		compatible = "techstar,ts8550b", "sitronix,st7701";
++		reg = <0>;
++		VCC-supply = <&reg_dldo2>;
++		IOVCC-supply = <&reg_dldo2>;
++		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* LCD-RST: PD24 */
++		backlight = <&backlight>;
++	};
+ };
+ 
+ &ehci0 {
+ 	status = "okay";
+ };
+ 
++&i2c0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c0_pins>;
++	status = "okay";
++
++	temp@48 {
++		compatible = "st,stlm75";
++		reg = <0x48>;
++	};
++};
++
++&i2c0_pins {
++	bias-pull-up;
++};
++
++&i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
++	status = "okay";
++
++	touchscreen@5d {
++		compatible = "goodix,gt5663";
++		reg = <0x5d>;
++		AVDD28-supply = <&reg_ldo_io0>;			/* VCC-CTP: GPIO0-LDO */
++		interrupt-parent = <&pio>;
++		interrupts = <7 4 IRQ_TYPE_EDGE_FALLING>;
++		irq-gpios = <&pio 7 4 GPIO_ACTIVE_HIGH>;	/* CTP-INT: PH4 */
++		reset-gpios = <&pio 7 8 GPIO_ACTIVE_HIGH>;	/* CTP-RST: PH8 */
++	};
++};
++
++&i2c1_pins {
++	bias-pull-up;
++};
++
+ &mmc1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc1_pins>;
+@@ -72,6 +216,12 @@
+ 	status = "okay";
+ };
+ 
++&pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_pin>;
++	status = "okay";
++};
++
+ &r_rsb {
+ 	status = "okay";
+ 
+@@ -197,10 +347,25 @@
+ 	regulator-name = "vdd-cpus";
+ };
+ 
++&reg_ldo_io0 {
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-ctp";
++	status = "okay";
++};
++
+ &reg_rtc_ldo {
+ 	regulator-name = "vcc-rtc";
+ };
+ 
++&sound {
++	status = "okay";
++	simple-audio-card,aux-devs = <&codec_analog>, <&speaker_amp>;
++	simple-audio-card,widgets = "Speaker", "Internal Speaker";
++	simple-audio-card,routing = "Speaker Amp INL", "LINEOUT",
++				    "Speaker Amp INR", "LINEOUT";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
+diff --git a/arch/arm/dts/sun50i-a64-bananapi-m64.dts b/arch/arm/dts/sun50i-a64-bananapi-m64.dts
+index ef1c90401b..bbf4bb1b22 100644
+--- a/arch/arm/dts/sun50i-a64-bananapi-m64.dts
++++ b/arch/arm/dts/sun50i-a64-bananapi-m64.dts
+@@ -45,6 +45,7 @@
+ #include "sun50i-a64.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "BananaPi-M64";
+@@ -56,10 +57,54 @@
+ 		serial1 = &uart1;
+ 	};
+ 
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <1 2 4 8 16 32 64 128 512>;
++		default-brightness-level = <2>;
++		enable-gpios = <&pio 3 5 GPIO_ACTIVE_HIGH>; /* LCD-BL-EN: PD5 */
++		power-supply = <&reg_vdd_backlight>;
++	};
++
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	i2c-csi {
++		compatible = "i2c-gpio";
++		sda-gpios = <&pio 4 13 GPIO_ACTIVE_HIGH>; /* CSI0-SDA: PE13 */
++		scl-gpios = <&pio 4 12 GPIO_ACTIVE_HIGH>; /* CSI0-SCK: PE12 */
++		i2c-gpio,delay-us = <5>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ov5640: camera@3c {
++			compatible = "ovti,ov5640";
++			reg = <0x3c>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&csi_mclk_pin>;
++			clocks = <&ccu CLK_CSI_MCLK>;
++			clock-names = "xclk";
++
++			AVDD-supply = <&reg_dldo3>;
++			DOVDD-supply = <&reg_aldo1>;
++			DVDD-supply = <&reg_eldo3>;
++			reset-gpios = <&pio 4 16 GPIO_ACTIVE_LOW>; /* CSI0-RST: PE16 */
++			powerdown-gpios = <&pio 4 17 GPIO_ACTIVE_HIGH>; /* CSI0-PWDN: PE17 */
++
++			port {
++				ov5640_ep: endpoint {
++					remote-endpoint = <&csi_ep>;
++					bus-width = <8>;
++					hsync-active = <1>; /* Active high */
++					vsync-active = <0>; /* Active low */
++					data-active = <1>;  /* Active high */
++					pclk-sample = <1>;  /* Rising */
++				};
++			};
++		};
++	};
++
+ 	hdmi-connector {
+ 		compatible = "hdmi-connector";
+ 		type = "a";
+@@ -91,16 +136,72 @@
+ 		};
+ 	};
+ 
++	reg_vdd_backlight: vdd-backlight {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd-backlight";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&pio 3 7 GPIO_ACTIVE_HIGH>; /* LCD-PWR-EN: PD7 */
++		enable-active-high;
++	};
++
+ 	wifi_pwrseq: wifi_pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
+ 	};
+ };
+ 
++&codec {
++	status = "okay";
++};
++
++&codec_analog {
++	hpvcc-supply = <&reg_eldo1>;
++	status = "okay";
++};
++
++&csi {
++	status = "okay";
++
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		csi_ep: endpoint {
++			remote-endpoint = <&ov5640_ep>;
++			bus-width = <8>;
++			hsync-active = <1>; /* Active high */
++			vsync-active = <0>; /* Active low */
++			data-active = <1>;  /* Active high */
++			pclk-sample = <1>;  /* Rising */
++		};
++	};
++};
++
++&dai {
++	status = "okay";
++};
++
+ &de {
+ 	status = "okay";
+ };
+ 
++&dphy {
++	status = "okay";
++};
++
++&dsi {
++	status = "okay";
++
++	panel@0 {
++		compatible = "bananapi,s070wv20-ct16-icn6211";
++		reg = <0>;
++		reset-gpios = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* LCD-RST: PD6 */
++		vdd-supply = <&reg_dldo1>;
++		backlight = <&backlight>;
++	};
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -193,6 +294,12 @@
+ 	status = "okay";
+ };
+ 
++&r_pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&r_pwm_pin>;
++	status = "okay";
++};
++
+ &r_rsb {
+ 	status = "okay";
+ 
+@@ -283,6 +390,12 @@
+ 	regulator-name = "vcc-wifi";
+ };
+ 
++&reg_dldo3 {
++	regulator-min-microvolt = <2800000>;
++	regulator-max-microvolt = <2800000>;
++	regulator-name = "avdd-csi";
++};
++
+ &reg_dldo4 {
+ 	regulator-min-microvolt = <1800000>;
+ 	regulator-max-microvolt = <3300000>;
+@@ -300,6 +413,12 @@
+ 	regulator-name = "cpvdd";
+ };
+ 
++&reg_eldo3 {
++	regulator-min-microvolt = <1500000>;
++	regulator-max-microvolt = <1500000>;
++	regulator-name = "dvdd-csi";
++};
++
+ &reg_fldo1 {
+ 	regulator-min-microvolt = <1200000>;
+ 	regulator-max-microvolt = <1200000>;
+@@ -326,6 +445,22 @@
+ 	vcc-hdmi-supply = <&reg_dldo1>;
+ };
+ 
++&sound {
++	status = "okay";
++	simple-audio-card,widgets = "Headphone", "Headphone Jack",
++				    "Microphone", "Microphone Jack",
++				    "Microphone", "Onboard Microphone";
++	simple-audio-card,routing =
++			"Left DAC", "AIF1 Slot 0 Left",
++			"Right DAC", "AIF1 Slot 0 Right",
++			"AIF1 Slot 0 Left ADC", "Left ADC",
++			"AIF1 Slot 0 Right ADC", "Right ADC",
++			"Headphone Jack", "HP",
++			"MIC2", "Microphone Jack",
++			"Onboard Microphone", "MBIAS",
++			"MIC1", "Onboard Microphone";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
+diff --git a/arch/arm/dts/sun50i-a64-pine64-lts.dts b/arch/arm/dts/sun50i-a64-pine64-lts.dts
+index 72d6961dc3..9e230c6127 100644
+--- a/arch/arm/dts/sun50i-a64-pine64-lts.dts
++++ b/arch/arm/dts/sun50i-a64-pine64-lts.dts
+@@ -5,9 +5,46 @@
+  */
+ 
+ #include "sun50i-a64-sopine-baseboard.dts"
++#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "Pine64 LTS";
+ 	compatible = "pine64,pine64-lts", "allwinner,sun50i-r18",
+ 		     "allwinner,sun50i-a64";
++
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <1 2 4 8 16 32 64 128 512>;
++		default-brightness-level = <8>;
++		enable-gpios = <&pio 7 10 GPIO_ACTIVE_HIGH>; /* LCD-BL-EN: PH10 */
++	};
++};
++
++&de {
++	status = "okay";
++};
++
++&dphy {
++	status = "okay";
++};
++
++&dsi {
++	vcc-dsi-supply = <&reg_dldo1>;		/* VCC3V3-DSI */
++	status = "okay";
++
++	panel@0 {
++		compatible = "feiyang,fy07024di26a30d";
++		reg = <0>;
++		avdd-supply = <&reg_dc1sw>;	/* VCC-LCD */
++		dvdd-supply = <&reg_dldo2>;	/* VCC-MIPI */
++		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* LCD-RST: PD24 */
++		backlight = <&backlight>;
++	};
++};
++
++&r_pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&r_pwm_pin>;
++	status = "okay";
+ };
+diff --git a/arch/arm/dts/sun50i-a64-pine64-plus.dts b/arch/arm/dts/sun50i-a64-pine64-plus.dts
+index 629b7c92d9..24f1aac366 100644
+--- a/arch/arm/dts/sun50i-a64-pine64-plus.dts
++++ b/arch/arm/dts/sun50i-a64-pine64-plus.dts
+@@ -41,57 +41,18 @@
+  */
+ 
+ #include "sun50i-a64-pine64.dts"
+-#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "Pine64+";
+ 	compatible = "pine64,pine64-plus", "allwinner,sun50i-a64";
+ 
+-	pwm_bl: backlight {
+-		compatible = "pwm-backlight";
+-		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
+-		brightness-levels = <1 2 4 8 16 32 64 128 255>;
+-		default-brightness-level = <8>;
+-		enable-gpios = <&pio 7 10 GPIO_ACTIVE_HIGH>; /* PH10 */
+-	};
+-
+-
+ 	/* TODO: Camera, touchscreen, etc. */
+ };
+ 
+-&de {
+-	status = "okay";
+-};
+-
+-&mixer0 {
+-	status = "okay";
+-};
+-
+-&tcon0 {
+-	status = "okay";
+-};
+-
+-&dphy {
+-	status = "okay";
+-};
+-
+-&dsi {
+-	status = "okay";
+-
+-	panel@0 {
+-		compatible = "feiyang,fy07024di26a30d", "simple-panel";
+-		reg = <0>;
+-		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
+-		backlight = <&pwm_bl>;
+-		avdd-supply = <&reg_dc1sw>;
+-		dvdd-supply = <&reg_dldo2>;
+-	};
+-};
+-
+ &emac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&rgmii_pins>;
+-	phy-mode = "rgmii-txid";
++	phy-mode = "rgmii";
+ 	phy-handle = <&ext_rgmii_phy>;
+ 	status = "okay";
+ };
+@@ -102,9 +63,3 @@
+ 		reg = <1>;
+ 	};
+ };
+-
+-&r_pwm {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&r_pwm_pin>;
+-	status = "okay";
+-};
+diff --git a/arch/arm/dts/sun50i-a64-pine64.dts b/arch/arm/dts/sun50i-a64-pine64.dts
+index 480efb9d87..216f2f5db5 100644
+--- a/arch/arm/dts/sun50i-a64-pine64.dts
++++ b/arch/arm/dts/sun50i-a64-pine64.dts
+@@ -73,11 +73,6 @@
+ 			};
+ 		};
+ 	};
+-
+-	wifi_pwrseq: wifi_pwrseq {
+-		compatible = "mmc-pwrseq-simple";
+-		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
+-	};
+ };
+ 
+ &codec {
+@@ -85,13 +80,10 @@
+ };
+ 
+ &codec_analog {
++	hpvcc-supply = <&reg_eldo1>;
+ 	status = "okay";
+ };
+ 
+-&cpu0 {
+-	cpu-supply = <&reg_dcdc2>;
+-};
+-
+ &dai {
+ 	status = "okay";
+ };
+@@ -139,10 +131,6 @@
+ 	bias-pull-up;
+ };
+ 
+-&i2s2 {
+-	status = "okay";
+-};
+-
+ &mdio {
+ 	ext_rmii_phy1: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+@@ -160,17 +148,6 @@
+ 	status = "okay";
+ };
+ 
+-&mmc1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&mmc1_pins>;
+-	vmmc-supply = <&reg_dldo4>;
+-	vqmmc-supply = <&reg_eldo1>;
+-	mmc-pwrseq = <&wifi_pwrseq>;
+-	non-removable;
+-	bus-width = <4>;
+-	status = "okay";
+-};
+-
+ &ohci0 {
+ 	status = "okay";
+ };
+@@ -295,30 +272,23 @@
+ 	vcc-hdmi-supply = <&reg_dldo1>;
+ };
+ 
+-/* On Euler connector */
+-&spdif {
+-	status = "disabled";
+-};
+-
+ &sound {
+-	status = "okay";
++	simple-audio-card,aux-devs = <&codec_analog>;
+ 	simple-audio-card,widgets = "Microphone", "Microphone Jack",
+ 				    "Headphone", "Headphone Jack";
+ 	simple-audio-card,routing =
+ 			"Left DAC", "AIF1 Slot 0 Left",
+ 			"Right DAC", "AIF1 Slot 0 Right",
+-			"Speaker", "LINEOUT",
+ 			"Headphone Jack", "HP",
+ 			"AIF1 Slot 0 Left ADC", "Left ADC",
+ 			"AIF1 Slot 0 Right ADC", "Right ADC",
+-			"Left ADC", "ADC",
+-			"Right ADC", "ADC",
+-			"Microphone Jack", "HBIAS",
+ 			"MIC2", "Microphone Jack";
++	status = "okay";
+ };
+ 
+-&sound_hdmi {
+-	status = "okay";
++/* On Euler connector */
++&spdif {
++	status = "disabled";
+ };
+ 
+ /* On Exp and Euler connectors */
+@@ -332,15 +302,7 @@
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+-	status = "okay";
+-
+-	bluetooth {
+-		compatible = "realtek,rtl8723bs-bt";
+-		reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
+-		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
+-		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
+-		firmware-postfix = "pine64";
+-	};
++	status = "disabled";
+ };
+ 
+ /* On Pi-2 connector */
+diff --git a/arch/arm/dts/sun50i-a64-pinebook.dts b/arch/arm/dts/sun50i-a64-pinebook.dts
+index 95bcedc13d..25018d032d 100644
+--- a/arch/arm/dts/sun50i-a64-pinebook.dts
++++ b/arch/arm/dts/sun50i-a64-pinebook.dts
+@@ -63,17 +63,6 @@
+ 		};
+ 	};
+ 
+-	hdmi-connector {
+-		compatible = "hdmi-connector";
+-		type = "c";
+-
+-		port {
+-			hdmi_con_in: endpoint {
+-				remote-endpoint = <&hdmi_out_con>;
+-			};
+-		};
+-	};
+-
+ 	reg_vcc3v3: vcc3v3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3";
+@@ -81,15 +70,23 @@
+ 		regulator-max-microvolt = <3300000>;
+ 	};
+ 
+-	speaker_amp: speaker_amp {
+-		compatible = "simple-audio-amplifier";
+-		enable-gpios = <&pio 7 7 GPIO_ACTIVE_HIGH>;
+-	};
+-
+ 	wifi_pwrseq: wifi_pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
+ 	};
++
++	speaker_amp: audio-amplifier {
++		compatible = "simple-audio-amplifier";
++		/*
++		 * TODO This is actually a fixed regulator controlled by
++		 * the GPIO line on the PMIC. This should be corrected
++		 * once GPIO support is added for this PMIC.
++		 */
++		VCC-supply = <&reg_ldo_io0>;
++		enable-gpios = <&pio 7 7 GPIO_ACTIVE_HIGH>; /* PH7 */
++		sound-name-prefix = "Speaker Amp";
++	};
++
+ };
+ 
+ &codec {
+@@ -97,21 +94,14 @@
+ };
+ 
+ &codec_analog {
++	hpvcc-supply = <&reg_eldo1>;
+ 	status = "okay";
+ };
+ 
+-&cpu0 {
+-       cpu-supply = <&reg_dcdc2>;
+-};
+-
+ &dai {
+ 	status = "okay";
+ };
+ 
+-&de {
+-	status = "okay";
+-};
+-
+ &ehci0 {
+ 	phys = <&usbphy 0>;
+ 	phy-names = "usb";
+@@ -122,25 +112,6 @@
+ 	status = "okay";
+ };
+ 
+-&hdmi {
+-	hvcc-supply = <&reg_dldo1>;
+-	status = "okay";
+-};
+-
+-&hdmi_out {
+-	hdmi_out_con: endpoint {
+-		remote-endpoint = <&hdmi_con_in>;
+-	};
+-};
+-
+-&i2s2 {
+-	status = "okay";
+-};
+-
+-&mixer0 {
+-	status = "okay";
+-};
+-
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins>;
+@@ -192,27 +163,6 @@
+ 	status = "okay";
+ };
+ 
+-&r_i2c {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&r_i2c_pins_a>;
+-	status = "okay";
+-
+-	anx6345: anx6345@38 {
+-		compatible = "analogix,anx6345";
+-		reg = <0x38>;
+-		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
+-		panel-supply = <&reg_dc1sw>;
+-		dvdd25-supply = <&reg_dldo2>;
+-		dvdd12-supply = <&reg_fldo1>;
+-
+-		port {
+-			anx6345_in: endpoint {
+-				remote-endpoint = <&tcon0_out_anx6345>;
+-			};
+-		};
+-	};
+-};
+-
+ &r_rsb {
+ 	status = "okay";
+ 
+@@ -234,14 +184,6 @@
+ 
+ #include "axp803.dtsi"
+ 
+-&ac_power_supply {
+-	status = "okay";
+-};
+-
+-&battery_power_supply {
+-	status = "okay";
+-};
+-
+ &reg_aldo1 {
+ 	regulator-min-microvolt = <2800000>;
+ 	regulator-max-microvolt = <2800000>;
+@@ -363,67 +305,33 @@
+ 
+ &sound {
+ 	status = "okay";
++	simple-audio-card,aux-devs = <&codec_analog>, <&speaker_amp>;
+ 	simple-audio-card,widgets = "Microphone", "Internal Microphone Left",
+ 				    "Microphone", "Internal Microphone Right",
+ 				    "Headphone", "Headphone Jack",
+ 				    "Speaker", "Internal Speaker";
+-	simple-audio-card,aux-devs = <&codec_analog>, <&speaker_amp>;
+ 	simple-audio-card,routing =
+ 			"Left DAC", "AIF1 Slot 0 Left",
+ 			"Right DAC", "AIF1 Slot 0 Right",
+-			"INL", "LINEOUT",
+-			"INR", "LINEOUT",
+-			"Internal Speaker", "OUTL",
+-			"Internal Speaker", "OUTR",
++			"Speaker Amp INL", "LINEOUT",
++			"Speaker Amp INR", "LINEOUT",
++			"Internal Speaker", "Speaker Amp OUTL",
++			"Internal Speaker", "Speaker Amp OUTR",
+ 			"Headphone Jack", "HP",
+ 			"AIF1 Slot 0 Left ADC", "Left ADC",
+ 			"AIF1 Slot 0 Right ADC", "Right ADC",
+-			"Left ADC", "ADC",
+-			"Right ADC", "ADC",
+ 			"Internal Microphone Left", "MBIAS",
+ 			"MIC1", "Internal Microphone Left",
+ 			"Internal Microphone Right", "HBIAS",
+ 			"MIC2", "Internal Microphone Right";
+ };
+ 
+-&sound_hdmi {
+-	status = "okay";
+-};
+-
+-&tcon0 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&lcd_rgb666_pins>;
+-
+-	status = "okay";
+-};
+-
+-&tcon0_out {
+-	tcon0_out_anx6345: endpoint@0 {
+-		reg = <0>;
+-		remote-endpoint = <&anx6345_in>;
+-	};
+-};
+-
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
+ 	status = "okay";
+ };
+ 
+-&uart1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+-	status = "okay";
+-
+-	bluetooth {
+-		compatible = "realtek,rtl8723cs-bt";
+-		reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
+-		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_LOW>; /* PL5 */
+-		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
+-		firmware-postfix = "pinebook";
+-	};
+-};
+-
+ &usb_otg {
+ 	dr_mode = "host";
+ };
+diff --git a/arch/arm/dts/sun50i-a64-sopine-baseboard.dts b/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
+index cca4b53f39..2052319b90 100644
+--- a/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
++++ b/arch/arm/dts/sun50i-a64-sopine-baseboard.dts
+@@ -46,7 +46,6 @@
+ /dts-v1/;
+ 
+ #include "sun50i-a64-sopine.dtsi"
+-#include <dt-bindings/pwm/pwm.h>
+ 
+ / {
+ 	model = "SoPine with baseboard";
+@@ -79,22 +78,6 @@
+ 		regulator-min-microvolt = <1800000>;
+ 		regulator-max-microvolt = <1800000>;
+ 	};
+-
+-	pwm_bl: backlight {
+-		compatible = "pwm-backlight";
+-		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
+-		brightness-levels = <1 2 4 8 16 32 64 128 255>;
+-		default-brightness-level = <8>;
+-		enable-gpios = <&pio 7 10 GPIO_ACTIVE_HIGH>; /* PH10 */
+-	};
+-};
+-
+-&ac_power_supply {
+-	status = "okay";
+-};
+-
+-&battery_power_supply {
+-	status = "okay";
+ };
+ 
+ &codec {
+@@ -105,10 +88,6 @@
+ 	status = "okay";
+ };
+ 
+-&cpu0 {
+-	cpu-supply = <&reg_dcdc2>;
+-};
+-
+ &dai {
+ 	status = "okay";
+ };
+@@ -117,18 +96,6 @@
+ 	status = "okay";
+ };
+ 
+-&mixer0 {
+-	status = "okay";
+-};
+-
+-&tcon0 {
+-	status = "okay";
+-};
+-
+-&dphy {
+-	status = "okay";
+-};
+-
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -137,19 +104,6 @@
+ 	status = "okay";
+ };
+ 
+-&dsi {
+-	status = "okay";
+-
+-	panel@0 {
+-		compatible = "feiyang,fy07024di26a30d", "simple-panel";
+-		reg = <0>;
+-		reset-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
+-		backlight = <&pwm_bl>;
+-		avdd-supply = <&reg_dc1sw>;
+-		dvdd-supply = <&reg_dldo2>;
+-	};
+-};
+-
+ &emac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&rgmii_pins>;
+@@ -170,10 +124,6 @@
+ 	};
+ };
+ 
+-&i2s2 {
+-	status = "okay";
+-};
+-
+ &mdio {
+ 	ext_rgmii_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+@@ -181,16 +131,6 @@
+ 	};
+ };
+ 
+-&mmc1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&mmc1_pins>;
+-	vmmc-supply = <&reg_dldo4>;
+-	vqmmc-supply = <&reg_eldo1>;
+-	non-removable;
+-	bus-width = <4>;
+-	status = "okay";
+-};
+-
+ &mmc2 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc2_pins>;
+@@ -199,7 +139,6 @@
+ 	bus-width = <8>;
+ 	non-removable;
+ 	cap-mmc-hw-reset;
+-	mmc-hs200-1_8v;
+ 	status = "okay";
+ };
+ 
+@@ -238,23 +177,16 @@
+ };
+ 
+ &sound {
+-	status = "okay";
++	simple-audio-card,aux-devs = <&codec_analog>;
+ 	simple-audio-card,widgets = "Microphone", "Microphone Jack",
+ 				    "Headphone", "Headphone Jack";
+ 	simple-audio-card,routing =
+ 			"Left DAC", "AIF1 Slot 0 Left",
+ 			"Right DAC", "AIF1 Slot 0 Right",
+-			"Speaker", "LINEOUT",
+ 			"Headphone Jack", "HP",
+ 			"AIF1 Slot 0 Left ADC", "Left ADC",
+ 			"AIF1 Slot 0 Right ADC", "Right ADC",
+-			"Left ADC", "ADC",
+-			"Right ADC", "ADC",
+-			"Microphone Jack", "HBIAS",
+ 			"MIC2", "Microphone Jack";
+-};
+-
+-&sound_hdmi {
+ 	status = "okay";
+ };
+ 
+@@ -264,20 +196,6 @@
+ 	status = "okay";
+ };
+ 
+-&uart1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+-	status = "okay";
+-
+-	bluetooth {
+-		compatible = "realtek,rtl8723bs-bt";
+-		reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
+-		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
+-		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
+-		firmware-postfix = "pine64";
+-	};
+-};
+-
+ &usb_otg {
+ 	dr_mode = "host";
+ 	status = "okay";
+@@ -286,9 +204,3 @@
+ &usbphy {
+ 	status = "okay";
+ };
+-
+-&r_pwm {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&r_pwm_pin>;
+-	status = "okay";
+-};
+diff --git a/arch/arm/dts/sun50i-a64-sopine.dtsi b/arch/arm/dts/sun50i-a64-sopine.dtsi
+index 6723b8695e..d2651f284a 100644
+--- a/arch/arm/dts/sun50i-a64-sopine.dtsi
++++ b/arch/arm/dts/sun50i-a64-sopine.dtsi
+@@ -47,6 +47,10 @@
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ 
++&codec_analog {
++	hpvcc-supply = <&reg_eldo1>;
++};
++
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins>;
+diff --git a/arch/arm/dts/sun50i-a64.dtsi b/arch/arm/dts/sun50i-a64.dtsi
+index 241118ba95..d07d843b24 100644
+--- a/arch/arm/dts/sun50i-a64.dtsi
++++ b/arch/arm/dts/sun50i-a64.dtsi
+@@ -49,7 +49,6 @@
+ #include <dt-bindings/reset/sun50i-a64-ccu.h>
+ #include <dt-bindings/reset/sun8i-de2.h>
+ #include <dt-bindings/reset/sun8i-r-ccu.h>
+-#include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+ 	interrupt-parent = <&gic>;
+@@ -80,52 +79,6 @@
+ 		};
+ 	};
+ 
+-	cpu0_opp_table: opp_table0 {
+-		compatible = "operating-points-v2";
+-		opp-shared;
+-
+-		opp-648000000 {
+-			opp-hz = /bits/ 64 <648000000>;
+-			opp-microvolt = <1040000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-816000000 {
+-			opp-hz = /bits/ 64 <816000000>;
+-			opp-microvolt = <1100000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-912000000 {
+-			opp-hz = /bits/ 64 <912000000>;
+-			opp-microvolt = <1120000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-960000000 {
+-			opp-hz = /bits/ 64 <960000000>;
+-			opp-microvolt = <1160000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-1008000000 {
+-			opp-hz = /bits/ 64 <1008000000>;
+-			opp-microvolt = <1200000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-1056000000 {
+-			opp-hz = /bits/ 64 <1056000000>;
+-			opp-microvolt = <1240000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-1104000000 {
+-			opp-hz = /bits/ 64 <1104000000>;
+-			opp-microvolt = <1260000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-		opp-1152000000 {
+-			opp-hz = /bits/ 64 <1152000000>;
+-			opp-microvolt = <1300000>;
+-			clock-latency-ns = <244144>; /* 8 32k periods */
+-		};
+-	};
+-
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -136,10 +89,6 @@
+ 			reg = <0>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
+-			clocks = <&ccu CLK_CPUX>;
+-			clock-names = "cpu";
+-			operating-points-v2 = <&cpu0_opp_table>;
+-			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -148,7 +97,6 @@
+ 			reg = <1>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
+-			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -157,7 +105,6 @@
+ 			reg = <2>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
+-			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -166,7 +113,6 @@
+ 			reg = <3>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2>;
+-			operating-points-v2 = <&cpu0_opp_table>;
+ 		};
+ 
+ 		L2: l2-cache {
+@@ -215,17 +161,13 @@
+ 		simple-audio-card,format = "i2s";
+ 		simple-audio-card,frame-master = <&cpudai>;
+ 		simple-audio-card,bitclock-master = <&cpudai>;
+-		simple-audio-card,mclk-fs = <512>;
++		simple-audio-card,mclk-fs = <128>;
+ 		simple-audio-card,aux-devs = <&codec_analog>;
+ 		simple-audio-card,routing =
+ 				"Left DAC", "AIF1 Slot 0 Left",
+ 				"Right DAC", "AIF1 Slot 0 Right",
+ 				"AIF1 Slot 0 Left ADC", "Left ADC",
+-				"AIF1 Slot 0 Right ADC", "Right ADC",
+-				"Left ADC", "ADC",
+-				"Right ADC", "ADC",
+-				"MIC1", "Mic",
+-				"MIC2", "Headset Mic";
++				"AIF1 Slot 0 Right ADC", "Right ADC";
+ 		status = "disabled";
+ 
+ 		cpudai: simple-audio-card,cpu {
+@@ -255,77 +197,8 @@
+ 		compatible = "linux,spdif-dit";
+ 	};
+ 
+-	reserved-memory {
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		ranges;
+-
+-		cma: linux,cma {
+-			compatible = "shared-dma-pool";
+-			reusable;
+-			size = <0x4000000>;
+-			alignment = <0x2000>;
+-			linux,cma-default;
+-		};
+-	};
+-
+-	thermal-zones {
+-		cpu_thermal: cpu0-thermal {
+-			/* milliseconds */
+-			polling-delay-passive = <250>;
+-			polling-delay = <1000>;
+-			thermal-sensors = <&ths 0>;
+-
+-			cooling-maps {
+-				map0 {
+-					trip = <&cpu_alert0>;
+-					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+-				};
+-				map1 {
+-					trip = <&cpu_alert1>;
+-					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+-				};
+-			};
+-			trips {
+-				cpu_alert0: cpu_alert0 {
+-					/* milliCelsius */
+-					temperature = <75000>;
+-					hysteresis = <2000>;
+-					type = "passive";
+-				};
+-
+-				cpu_alert1: cpu_alert1 {
+-					/* milliCelsius */
+-					temperature = <90000>;
+-					hysteresis = <2000>;
+-					type = "hot";
+-				};
+-
+-				cpu_crit: cpu_crit {
+-					/* milliCelsius */
+-					temperature = <110000>;
+-					hysteresis = <2000>;
+-					type = "critical";
+-				};
+-			};
+-		};
+-		gpu0_thermal: gpu0-thermal {
+-			/* milliseconds */
+-			polling-delay-passive = <250>;
+-			polling-delay = <1000>;
+-			thermal-sensors = <&ths 1>;
+-		};
+-		gpu1_thermal: gpu1-thermal {
+-			/* milliseconds */
+-			polling-delay-passive = <250>;
+-			polling-delay = <1000>;
+-			thermal-sensors = <&ths 2>;
+-		};
+-	};
+-
+ 	timer {
+ 		compatible = "arm,armv8-timer";
+-		allwinner,sun50i-a64-unstable-timer;
+ 		interrupts = <GIC_PPI 13
+ 			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
+ 			     <GIC_PPI 14
+@@ -475,6 +348,7 @@
+ 					tcon0_out_dsi: endpoint@1 {
+ 						reg = <1>;
+ 						remote-endpoint = <&dsi_in_tcon0>;
++						allwinner,tcon-channel = <1>;
+ 					};
+ 				};
+ 			};
+@@ -664,6 +538,17 @@
+ 			interrupt-controller;
+ 			#interrupt-cells = <3>;
+ 
++			csi_pins: csi-pins {
++				pins = "PE0", "PE2", "PE3", "PE4", "PE5", "PE6",
++				       "PE7", "PE8", "PE9", "PE10", "PE11";
++				function = "csi0";
++			};
++
++			csi_mclk_pin: csi-mclk {
++				pins = "PE1";
++				function = "csi0";
++			};
++
+ 			i2c0_pins: i2c0_pins {
+ 				pins = "PH0", "PH1";
+ 				function = "i2c0";
+@@ -674,15 +559,6 @@
+ 				function = "i2c1";
+ 			};
+ 
+-			lcd_rgb666_pins: lcd-rgb666 {
+-				pins = "PD0", "PD1", "PD2", "PD3", "PD4",
+-				       "PD5", "PD6", "PD7", "PD8", "PD9",
+-				       "PD10", "PD11", "PD12", "PD13",
+-				       "PD14", "PD15", "PD16", "PD17",
+-				       "PD18", "PD19", "PD20", "PD21";
+-				function = "lcd0";
+-			};
+-
+ 			mmc0_pins: mmc0-pins {
+ 				pins = "PF0", "PF1", "PF2", "PF3",
+ 				       "PF4", "PF5";
+@@ -830,19 +706,6 @@
+ 			status = "disabled";
+ 		};
+ 
+-		i2s2: i2s@1c22800 {
+-			#sound-dai-cells = <0>;
+-			compatible = "allwinner,sun8i-h3-i2s";
+-			reg = <0x01c22800 0x400>;
+-			interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&ccu CLK_BUS_I2S2>, <&ccu CLK_I2S2>;
+-			clock-names = "apb", "mod";
+-			dmas = <&dma 27>;
+-			resets = <&ccu RST_BUS_I2S2>;
+-			dma-names = "tx";
+-			status = "disabled";
+-		};
+-
+ 		dai: dai@1c22c00 {
+ 			#sound-dai-cells = <0>;
+ 			compatible = "allwinner,sun50i-a64-codec-i2s";
+@@ -867,55 +730,6 @@
+ 			status = "disabled";
+ 		};
+ 
+-		ths: thermal-sensor@1c25000 {
+-			compatible = "allwinner,sun50i-a64-ths";
+-			reg = <0x01c25000 0x100>;
+-			interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
+-			clock-names = "bus", "mod";
+-			resets = <&ccu RST_BUS_THS>;
+-			#io-channel-cells = <0>;
+-			#thermal-sensor-cells = <1>;
+-		};
+-
+-		dsi: dsi@1ca0000 {
+-			compatible = "allwinner,sun50i-a64-mipi-dsi";
+-			reg = <0x01ca0000 0x1000>;
+-			interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&ccu CLK_BUS_MIPI_DSI>,
+-				 <&ccu CLK_DSI_DPHY>;
+-			clock-names = "bus", "mod";
+-			resets = <&ccu RST_BUS_MIPI_DSI>;
+-			phys = <&dphy>;
+-			phy-names = "dphy";
+-			status = "disabled";
+-
+-			ports {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+-
+-				port@0 {
+-					#address-cells = <1>;
+-					#size-cells = <0>;
+-					reg = <0>;
+-
+-					dsi_in_tcon0: endpoint {
+-						remote-endpoint = <&tcon0_out_dsi>;
+-					};
+-				};
+-			};
+-		};
+-
+-		dphy: d-phy@1ca1000 {
+-			compatible = "allwinner,sun50i-a64-mipi-dphy";
+-			reg = <0x01ca1000 0x1000>;
+-			clocks = <&ccu CLK_BUS_MIPI_DSI>;
+-			clock-names = "bus";
+-			resets = <&ccu RST_BUS_MIPI_DSI>;
+-			status = "disabled";
+-			#phy-cells = <0>;
+-		};
+-
+ 		uart0: serial@1c28000 {
+ 			compatible = "snps,dw-apb-uart";
+ 			reg = <0x01c28000 0x400>;
+@@ -1059,8 +873,7 @@
+ 		};
+ 
+ 		mali: gpu@1c40000 {
+-			compatible = "allwinner,sun50i-a64-mali",
+-				     "allwinner,sun7i-a20-mali", "arm,mali-400";
++			compatible = "allwinner,sun50i-h5-mali", "arm,mali-400";
+ 			reg = <0x01c40000 0x10000>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
+@@ -1079,10 +892,6 @@
+ 			clocks = <&ccu CLK_BUS_GPU>, <&ccu CLK_GPU>;
+ 			clock-names = "bus", "core";
+ 			resets = <&ccu RST_BUS_GPU>;
+-			memory-region = <&cma>;
+-
+-			assigned-clocks = <&ccu CLK_GPU>;
+-			assigned-clock-rates = <384000000>;
+ 		};
+ 
+ 		gic: interrupt-controller@1c81000 {
+@@ -1107,8 +916,60 @@
+ 			status = "disabled";
+ 		};
+ 
++		dsi: dsi@1ca0000 {
++			compatible = "allwinner,sun50i-a64-mipi-dsi";
++			reg = <0x01ca0000 0x1000>;
++			interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_MIPI_DSI>;
++			clock-names = "bus";
++			resets = <&ccu RST_BUS_MIPI_DSI>;
++			phys = <&dphy>;
++			phy-names = "dphy";
++			status = "disabled";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@0 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <0>;
++
++					dsi_in_tcon0: endpoint {
++						remote-endpoint = <&tcon0_out_dsi>;
++					};
++				};
++			};
++		};
++
++		dphy: d-phy@1ca1000 {
++			compatible = "allwinner,sun50i-a64-mipi-dphy",
++				     "allwinner,sun6i-a31-mipi-dphy";
++			reg = <0x01ca1000 0x1000>;
++			clocks = <&ccu CLK_BUS_MIPI_DSI>,
++				 <&ccu CLK_DSI_DPHY>;
++			clock-names = "bus", "mod";
++			resets = <&ccu RST_BUS_MIPI_DSI>;
++			status = "disabled";
++			#phy-cells = <0>;
++		};
++
++		csi: csi@1cb0000 {
++			compatible = "allwinner,sun50i-a64-csi";
++			reg = <0x01cb0000 0x1000>;
++			interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_CSI>,
++				 <&ccu CLK_CSI_SCLK>,
++				 <&ccu CLK_DRAM_CSI>;
++			clock-names = "bus", "mod", "ram";
++			resets = <&ccu RST_BUS_CSI>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&csi_pins>;
++			status = "disabled";
++		};
++
+ 		hdmi: hdmi@1ee0000 {
+-			#sound-dai-cells = <0>;
+ 			compatible = "allwinner,sun50i-a64-dw-hdmi",
+ 				     "allwinner,sun8i-a83t-dw-hdmi";
+ 			reg = <0x01ee0000 0x10000>;
+@@ -1152,22 +1013,6 @@
+ 			#phy-cells = <0>;
+ 		};
+ 
+-		sound_hdmi: sound_hdmi {
+-			compatible = "simple-audio-card";
+-			simple-audio-card,format = "i2s";
+-			simple-audio-card,name = "allwinner,hdmi";
+-			simple-audio-card,mclk-fs = <256>;
+-			status = "disabled";
+-
+-			simple-audio-card,codec {
+-				sound-dai = <&hdmi>;
+-			};
+-
+-			simple-audio-card,cpu {
+-				sound-dai = <&i2s2>;
+-			};
+-		};
+-
+ 		rtc: rtc@1f00000 {
+ 			compatible = "allwinner,sun6i-a31-rtc";
+ 			reg = <0x01f00000 0x54>;
+-- 
+2.20.1
+
