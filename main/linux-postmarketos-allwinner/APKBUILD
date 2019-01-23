@@ -17,6 +17,7 @@ _commit="399381b838535c2384b33fb1497f8ada2a9ebe8f"
 source="
 	linux-${_commit}.tar.gz::https://github.com/amarula/linux-amarula/archive/${_commit}.tar.gz
 	config-${_flavor}.aarch64
+	extra.patch
 "
 
 subpackages="$pkgname-dev"
@@ -177,4 +178,5 @@ dev() {
 	fi
 }
 sha512sums="b4f56dd4cc3a24c715bbe6dea43382d606cb0b1d2ba894cd7201331084a46295fbf2277be9fbbeba96a72ebbdadedf27df1ec0845b7d492e8bc7a4e991b69871  linux-399381b838535c2384b33fb1497f8ada2a9ebe8f.tar.gz
-83df4ac28c28dd7c868218b4c00e4ac2f364c6ddbc4c92dc1bad5c1690d9c24e0bc3dd2591050d3591c49dff0cab299323845a78466923570afa86fce9f78405  config-postmarketos-allwinner.aarch64"
+83df4ac28c28dd7c868218b4c00e4ac2f364c6ddbc4c92dc1bad5c1690d9c24e0bc3dd2591050d3591c49dff0cab299323845a78466923570afa86fce9f78405  config-postmarketos-allwinner.aarch64
+0a1cb87e73ad84c778cd8e4a627873e6ec2c0285f3c9d92451bf588b14702f732ce192d25b4f0e8c6cf282de8df5064dfd23f61f06e96e71fb105b21ecfa3e0f  extra.patch"
