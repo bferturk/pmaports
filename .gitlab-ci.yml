@@ -8,13 +8,14 @@ stages:
   - first
   - second
 
-# device documentation
-wiki:
+# device documentation, MR settings
+web:
   stage: first
   before_script:
     - apk -q add python3
   script:
     - .gitlab-ci/check_devices_in_wiki.py --booting
+    - .gitlab-ci/check_mr_settings.py
 
 # static code analysis (shellcheck is not in Alpine, so we use Debian)
 py-sh-static:
