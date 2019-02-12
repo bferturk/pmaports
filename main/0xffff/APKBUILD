@@ -1,6 +1,6 @@
 pkgname=0xffff
 pkgver=0.7
-pkgrel=1
+pkgrel=2
 pkgdesc="Flasher for Maemo devices"
 url="https://github.com/pali/0xFFFF"
 arch="all"
