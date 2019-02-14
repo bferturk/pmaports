@@ -1,0 +1,41 @@
+# Contributor: Daniele Debernardi <drebrez@gmail.com>
+# Maintainer: Daniele Debernardi <drebrez@gmail.com>
+pkgname=u-boot-tuna
+pkgver=2013.01
+pkgrel=0
+pkgdesc="u-boot port for Tuna (Galaxy Nexus)"
+url="https://github.com/Ksys-labs/uboot-tuna"
+arch="armhf"
+license="GPL-2.0"
+makedepends="sed gcc4"
+options="!check"
+
+# Compiler: GCC 4 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="uboot-tuna"
+_commit="2871f1df61b5a10c2866a9f5c5ccc4f14196bc49";
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Ksys-labs/${_repository}/archive/${_commit}.tar.gz
+	00-missing-ulong-definition.patch
+	"
+builddir="$srcdir/${_repository}-${_commit}"
+
+build() {
+	export LDFLAGS=""
+	make omap4_tuna_config
+	make CC="${CC:-gcc}" omap4_tuna
+}
+
+package() {
+	install -D -m644 "$builddir"/u-boot.bin \
+		"$pkgdir/usr/share/firmware/tuna/u-boot.bin"
+}
+
+sha512sums="23b1141e28854b1493807ffaa05d9230b5e7a152c7cf9140a64fee4312b99805b781d3ecc81b2ea75469a7a721adf3d6b84cfa89403dac102c5e881bd25a2d68  u-boot-tuna-2871f1df61b5a10c2866a9f5c5ccc4f14196bc49.tar.gz
+4d7dace5b5edb1f6559eff9d735c643ae65be686fa62a250e4dd11201ad06aad615efbe8000f85fcf4fcec2317ad8cab2093c32627ff0cece43cc2db2801630e  00-missing-ulong-definition.patch"

@@ -1,0 +1,15 @@
+diff --git a/include/compiler.h b/include/compiler.h
+index 0734ed494..a418608bb 100644
+--- a/include/compiler.h
++++ b/include/compiler.h
+@@ -46,8 +46,9 @@
+ # include <byteswap.h>
+ #elif defined(__MACH__) || defined(__FreeBSD__)
+ # include <machine/endian.h>
+-typedef unsigned long ulong;
+ #endif
++typedef unsigned long ulong;
++
+ 
+ typedef uint8_t __u8;
+ typedef uint16_t __u16;
