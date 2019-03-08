@@ -1,0 +1,44 @@
+pkgname=postmarketos-ui-shelli
+pkgver=20181207
+pkgrel=0
+_rel="4f6408c15f5b14847ac55906555378edc74c3b41"
+pkgdesc="Plain console with touchscreen gesture support"
+url="https://gitlab.com/unrznbl/shelli"
+arch="armhf armv7 aarch64"
+license="GPL-3.0-only"
+makedepends="linux-headers"
+depends="shelli-gesture kbd kbd-misc"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+source="
+	$pkgname-${_rel}.tar.gz::https://gitlab.com/unrznbl/shelli/-/archive/${_rel}/shelli-${_rel}.tar.gz
+"
+options="!check"
+builddir="$srcdir/shelli-${_rel}"
+build() {
+	cd $builddir
+	make all
+}
+
+package() {
+	install -Dm755 "$builddir"/powerkey \
+		"$pkgdir"/usr/bin/powerkey
+	install -Dm755 "$builddir"/brightness \
+		"$pkgdir"/usr/bin/brightness
+	install -Dm755 "$builddir"/battery \
+		"$pkgdir"/usr/bin/battery
+	install -Dm755 "$builddir"/largefont \
+		"$pkgdir"/usr/bin/largefont
+	install -Dm755 "$builddir"/screen_on_off \
+		"$pkgdir"/usr/bin/screen_on_off
+	install -Dm755 "$builddir"/onkey \
+		"$pkgdir"/usr/bin/onkey
+
+
+	install -Dm755 "$builddir"/powerkey.openrc \
+		"$pkgdir"/etc/init.d/powerkey
+	install -Dm755 "$builddir"/largefont.openrc \
+		"$pkgdir"/etc/init.d/largefont
+
+}
+
+sha512sums="7bf11436922737866dc871d5df8af7a9c23fed2727a07fe3a3ca33fe2c5401d1acd5cb267f2609a5526cb4a4396bb2d738a5524af958b0244bb961af5ee419cc  postmarketos-ui-shelli-4f6408c15f5b14847ac55906555378edc74c3b41.tar.gz"

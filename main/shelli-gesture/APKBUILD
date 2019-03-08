@@ -1,0 +1,40 @@
+pkgname=shelli-gesture
+pkgver=20181219
+pkgrel=0
+_rel="c7feadb759e6afa7e400166bb7377097c5361f4a"
+pkgdesc="handwriting algorithm with implementation for linux touchscreens injecting keys into a tty."
+url="https://gitlab.com/unrznbl/gesture"
+arch="all"
+license="GPL-3.0-only"
+depends=""
+makedepends="linux-headers"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+options="!check"
+source="
+	$pkgname-${pkgver}.tar.gz::https://gitlab.com/unrznbl/gesture/-/archive/${_rel}/gesture-${_rel}.tar.gz
+"
+builddir="$srcdir/gesture-${_rel}"
+
+build() {
+	cd "$builddir"
+	make all
+}
+
+package() {
+	cd "$builddir"
+	install -Dm755 "$builddir"/gesture \
+		"$pkgdir"/usr/bin/gesture
+	install -Dm755 "$builddir"/gesture2tty \
+		"$pkgdir"/usr/bin/gesture2tty
+	install -Dm755 "$builddir"/injectkeys \
+		"$pkgdir"/usr/bin/injectkeys
+
+	install -Dm755 "$builddir"/gesture.openrc \
+		"$pkgdir"/etc/init.d/gesture
+
+	install -Dm644 "$builddir"/gesture.conf \
+		"$pkgdir"/etc/gesture.conf
+
+}
+
+sha512sums="036d88fac630885d6e0c0aff4621efbc141482a4b2f6227a61092dd7616bb07012df91fc48e7a84d991ca680cc91241f0aa8ef22e2a97db63279ea56c5a657a7  shelli-gesture-20181219.tar.gz"
