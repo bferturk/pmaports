@@ -10,19 +10,19 @@ license="GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0"
 depends="xkeyboard-config dmz-cursor-theme ttf-freefont"
 depends_dev="boost-dev mesa-dev glm-dev protobuf-dev glog-dev gflags-dev eudev-dev glib-dev wayland-dev libepoxy-dev nettle-dev libinput-dev
 	capnproto-dev libxml++-2.6-dev py3-pillow freetype-dev libevdev-dev umockdev-dev lttng-ust-dev yaml-cpp-dev libxcursor-dev"
-makedepends="$depends_dev cmake libxkbcommon-dev gtest-dev gmock clang-dev"
-source="https://github.com/MirServer/mir/releases/download/v$pkgver/mir-$pkgver.tar.xz"
+makedepends="$depends_dev cmake libxkbcommon-dev gtest-dev gmock"
+source="https://github.com/MirServer/mir/releases/download/v$pkgver/mir-$pkgver.tar.xz
+	link_fix.patch"
 subpackages="$pkgname-dev"
 options="!check" # Some tests fail
 
 build() {
 	cd "$builddir"
-	export CC=clang
-	export CXX=clang++
 	cmake \
 		-DCMAKE_INSTALL_PREFIX:PATH=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DMIR_USE_LD=ld
+		-DMIR_USE_LD=ld \
+		-DMIR_FATAL_COMPILE_WARNINGS=OFF
 	make
 }
 
@@ -37,4 +37,5 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="4431615d795b93239a83a197d61a5900f094a2108933be4e4da09220bd20e2b031e5232174805216a964279fcf8786672d5c40c3be83856d1903f128b7b814b7  mir-1.1.2.tar.xz"
+sha512sums="4431615d795b93239a83a197d61a5900f094a2108933be4e4da09220bd20e2b031e5232174805216a964279fcf8786672d5c40c3be83856d1903f128b7b814b7  mir-1.1.2.tar.xz
+190219d876c4c5e4b215a45d36316e7eeb0fc87880d1b5f3c9c91298409e21f9560b0713c88c6ad5aaf39d73468362d7b9aa680dc9bb68b6bb180de91e4e6007  link_fix.patch"
