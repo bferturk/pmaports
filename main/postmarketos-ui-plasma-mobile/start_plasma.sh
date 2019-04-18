@@ -21,8 +21,8 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 
 		sleep 2
 
-		if [ -d "/dev/dri" ]; then
-			dbus-run-session ck-launch-session kwin_wayland --drm --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
+		if [ -d "/dev/dri" ] || [ -d "/usr/lib/libhybris-egl" ]; then
+			dbus-run-session ck-launch-session kwin_wayland --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
 		else
 			# NOTE: using GALLIUM_DRIVER=llvmpipe might give you better performance (or not work at all.)
 			# If it does give you a performance gain, please open an issue to discuss how to implement this properly.
