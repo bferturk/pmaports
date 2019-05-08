@@ -1,0 +1,19 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=osso-icons
+pkgver=2.5.0
+pkgrel=0
+pkgdesc="OSSO UI icons"
+url="https://github.com/maemo-leste/osso-icons"
+arch="noarch"
+license="proprietary"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+package() {
+	cd "$builddir"/files
+	find . -type f -exec install -D -m 644 {} "$pkgdir"/{} \;
+	rm -rf "$pkgdir"/usr/share/doc
+}
+
+sha512sums="7a384ad3405d6ff4f0509557a1d9f1d71bcbe54f23bead94e5795e72b31a188c4066ac140f0e31441054586e5bde08c7597af5797264f3e1b594f8d0e1f08813  osso-icons-2.5.0.tar.gz"

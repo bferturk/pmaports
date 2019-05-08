@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=ke-recv-extra
+pkgver=0.7.1
+pkgrel=0
+pkgdesc="Program for receiving low-memory events from the kernel and forwarding them to the D-Bus system bus, etc."
+url="https://github.com/maemo-leste/ke-recv-extra"
+arch="all"
+license="GPL-2.0"
+depends="osso-af-settings"
+makedepends="autoconf automake libtool libnl-dev libosso-dev gconf-dev dbus-dev osso-af-settings"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz
+	build-fix.patch"
+options="!check"
+
+prepare() {
+	default_prepare
+
+	cd "$builddir"
+	./autogen.sh
+}
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="03dd809e0377de36ae15731d8ae80f376b206a9bfab3ec94a618943a9369992322c89767fd706f950bc34a2ff45e86f1351a27f44f97910fe7a743dab827fad8  ke-recv-extra-0.7.1.tar.gz
+e7e20789db902dd06fce8747406af7b48fd3ade3d0e61b8a1aada9b523e56f834b3fec340c0fec32ed5dd2f865d250766c0c190fb114f7ba7a22a860500ace99  build-fix.patch"

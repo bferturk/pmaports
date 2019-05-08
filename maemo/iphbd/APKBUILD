@@ -1,3 +1,5 @@
+# Contributor: NotKit
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=iphbd
 pkgver=0.0.18
 pkgrel=2
@@ -9,8 +11,7 @@ depends="dbus dbus-glib"
 makedepends="autoconf automake libtool dbus-glib-dev"
 subpackages="$pkgname-dev"
 source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/iphbd/archive/$pkgver.tar.gz"
-
-builddir="$srcdir/iphbd-$pkgver"
+options="!check"
 
 build() {
 	cd "$builddir"

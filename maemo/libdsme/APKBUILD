@@ -1,17 +1,17 @@
+# Contributor: NotKit
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libdsme
 pkgver=0.60.30
-pkgrel=2
+pkgrel=3
 pkgdesc="Libraries for programs that communicate with the Device State Management Entity"
 arch="all"
 url="https://github.com/maemo-leste/libdsme"
-license="GPL"
+license="LGPL-2.1"
 depends="dbus glib"
 depends_dev="glib-dev"
 makedepends="bash glib-dev"
 subpackages="$pkgname-dev"
-source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libdsme/archive/$pkgver.tar.gz"
-
-_builddir="$srcdir/libdsme-$pkgver"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
 
 prepare() {
 	cd "$_builddir"
@@ -25,6 +25,6 @@ build() {
 
 package() {
 	cd "$_builddir"
-	make DESTDIR="$pkgdir/" install
+	DESTDIR="$pkgdir" make install
 }
 sha512sums="4c8559b0267b03199deffcf7037bb76ba80d6143f01fb291052740e53e7fcf20bbdc700a65a40682a4fd346f33f14bd8628981ef260d27b63c83bd14b8b64624  libdsme-0.60.30.tar.gz"

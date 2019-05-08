@@ -1,0 +1,23 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=osso-af-settings
+pkgver=0.9.2
+pkgrel=0
+pkgdesc="pkg-config settings for Maemo/OS 2006 "
+url="https://github.com/maemo-leste/osso-af-settings"
+arch="noarch"
+license="GPL-2.0"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="3df11f3a87229efb1cf7620baf7b14359a3de8536045755a253fff7128050091f0c1fd53e55a3a7730cf814d7ded1ebe9ad4e7c70d6a7643e73d1877904a9412  osso-af-settings-0.9.2.tar.gz"

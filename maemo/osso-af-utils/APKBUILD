@@ -1,0 +1,28 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=osso-af-utils
+# Latest release won't build, fixes in devel branch are required
+pkgver=2.13.2_git20190429
+pkgrel=0
+_commit="a810facee0f2cdc4210766b789c9ebfb0a7de97f"
+pkgdesc="Assortment of small programs for the application framework"
+url="https://github.com/maemo-leste/osso-af-utils"
+arch="all"
+license="GPL-2.0"
+makedepends="automake autoconf libtool linux-headers libpng-dev gtk+2.0-dev gconf-dev libx11-dev dbus-dev libcanberra-dev libjpeg-turbo-dev libosso-dev xorgproto"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cd "$builddir"
+	autoreconf
+	./configure --prefix=/usr
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="52358b26e4e954909c4473610ae63b7e507766e2134034cab89cd9ec16d5daa20fe39e07718e568da8dffff9a7cc4682d7a00131adf93c6bd364e5915db1778a  osso-af-utils-2.13.2_git20190429.tar.gz"

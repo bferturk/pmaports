@@ -1,0 +1,25 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=mce
+pkgver=1.8.128.12
+pkgrel=0
+pkgdesc="Mode Control Entity - Provides device mode logic and services for DSM interface"
+url="https://github.com/maemo-leste/mce"
+arch="all"
+license="LGPL-2.1"
+depends_dev=""
+makedepends="glib-dev dbus-dev gconf-dev libcal-dev dbus-glib-dev upower-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="81c5e4e598b83ba63d2f143be4d613d729aa777fa135e51b3f7088f40534fdd400a0dd619e5840352441cb675fef02c3d7b5a77fe9b87e435961f06624439d50  mce-1.8.128.12.tar.gz"

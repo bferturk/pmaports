@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=hildon-theme-cacher
+pkgver=0.4.3
+pkgrel=0
+pkgdesc="Tool to generate gtkrc cache files on the fly"
+url="https://github.com/maemo-leste/hildon-theme-cacher"
+arch="all"
+license="GPL-2.0"
+makedepends="automake autoconf gtk+2.0-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+prepare() {
+	default_prepare
+
+	cd "$builddir"
+	./autogen.sh
+}
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="28af7b0f5f3801749a86933ff07d2a0689db02896868d735eb4f66fa1301301918692b8187c216c624a23d1089d85942a3e4841a526c28b3081054484b3f5f60  hildon-theme-cacher-0.4.3.tar.gz"

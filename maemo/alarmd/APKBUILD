@@ -1,0 +1,24 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=alarmd
+pkgver=1.1.17
+pkgrel=0
+pkgdesc="An alarm framework used for handling of alarms and other timed events"
+url="https://github.com/maemo-leste/alarmd"
+arch="all"
+license="LGPL-2.1"
+makedepends="glib-dev dbus-glib-dev dbus-dev libconic-dev osso-systemui-dbus-headers-dev mce-headers statusbar-alarm-dbus-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="ca2472a1eb0ab97e489f99a37855f47656e7ec7afcaaf11a1e21b702a6a02e55d73eb1893bb68e6c7a5e7a83cbf8d84bd266b3b33aab1a9a20e5f9c2a325a4f8  alarmd-1.1.17.tar.gz"

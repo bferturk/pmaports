@@ -1,3 +1,5 @@
+# Contributor: NotKit
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libosso
 pkgver=2.32
 pkgrel=1
@@ -10,8 +12,7 @@ makedepends="mce-headers autoconf automake libtool dbus-glib-dev linux-headers"
 source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz
     libosso-mem-musl.patch"
 subpackages="$pkgname-dev"
-
-builddir="$srcdir/$pkgname-$pkgver"
+options="!check"
 
 build() {
 	cd "$builddir"

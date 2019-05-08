@@ -1,0 +1,10 @@
+diff --git a/Makefile b/Makefile
+index 599f8f7..b8541d7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,4 +1,4 @@
+-SHELL := /bin/bash
++SHELL := /bin/sh
+ 
+ #
+ # Build targets

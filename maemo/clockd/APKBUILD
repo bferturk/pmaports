@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=clockd
+pkgver=0.0.43
+pkgrel=0
+pkgdesc="Provides centralized place for handling time"
+url="https://github.com/maemo-leste/clockd"
+arch="all"
+license="LGPL-2.1"
+makedepends="autoconf automake libtool glib-dev dbus-glib-dev cityinfo-dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz
+	fix-unknown-type-name.patch"
+options="!check"
+
+prepare() {
+	default_prepare
+
+	cd "$builddir"
+	./autogen.sh
+}
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="54d0459d5207c6e560b78b0857b22b6fc0f19ecbab039f27ed2983b34f1c8ee100902af6184b56709c288c927acf10d84b7d677caa8d62e1d7e5a78f74fefccb  clockd-0.0.43.tar.gz
+82baef0d239d2fa2105c2d2eb5cd5662766b7b7131f3df74ffdb931916064b0a0939845db93eae7f43999bb2d1c10a286ca63d252bec35c0be74a88e7a43c47b  fix-unknown-type-name.patch"

@@ -1,0 +1,24 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=hildon-status-bar-usb
+pkgver=3.0.6
+pkgrel=0
+pkgdesc="Status menu plugin for indicating USB status of the device, ported to udev and gadget configfs"
+url="https://github.com/maemo-leste/hildon-status-bar-usb"
+arch="all"
+license="unknown"
+makedepends="libgudev-dev libhildondesktop-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="595e5f18519d842ba3378e2783351b9be2907a62d978f0e0ac72d18b7f664fe9008ab408569054788575a2dfd89f01d818752cca04344eb8d72d8d3389aa685c  hildon-status-bar-usb-3.0.6.tar.gz"

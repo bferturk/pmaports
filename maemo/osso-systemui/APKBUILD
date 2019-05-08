@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=osso-systemui
+pkgver=0.2.0.19
+pkgrel=0
+pkgdesc="OSSO systemui"
+url="https://github.com/maemo-leste/osso-systemui"
+arch="all"
+license="LGPL-2.1"
+depends_dev="gtk+3.0-dev libosso-dev gconf-dev osso-systemui-dbus-headers libcanberra-dev"
+makedepends="$depends_dev autoconf automake libtool"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+prepare() {
+	cd "$builddir"
+	./autogen.sh
+}
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="92aac73458446bfccd907f15388ec1e0d4c122b1e70d458933ca6c0739582497bc64480eec5ee9e4928627fd360854977ed9a35746f16e9c107c1a96d5e583ec  osso-systemui-0.2.0.19.tar.gz"

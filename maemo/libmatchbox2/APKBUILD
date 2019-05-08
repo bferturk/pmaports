@@ -1,3 +1,5 @@
+# Contributor: NotKit
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libmatchbox2
 pkgver=0.2.95
 pkgrel=0
@@ -7,12 +9,10 @@ url="https://github.com/maemo-leste/libmatchbox2"
 license="GPL"
 depends="gtk+2.0-maemo pango libpng libxext clutter"
 depends_dev="libxcomposite-dev libxext-dev libxdamage-dev"
-makedepends="autoconf automake libtool
-	gtk+2.0-maemo-dev pango-dev clutter-dev libpng-dev $depends_dev"
+makedepends="autoconf automake libtool gtk+2.0-maemo-dev pango-dev clutter-dev libpng-dev $depends_dev"
 subpackages="$pkgname-dev"
 source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libmatchbox2/archive/$pkgver.tar.gz"
-
-builddir="$srcdir/libmatchbox2-$pkgver"
+options="!check"
 
 prepare() {
 	cd "$builddir"

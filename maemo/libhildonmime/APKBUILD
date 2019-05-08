@@ -1,3 +1,5 @@
+# Contributor: NotKit
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libhildonmime
 pkgver=3.0.0
 pkgrel=1
@@ -5,12 +7,10 @@ pkgdesc="Hildon MIME library"
 arch="all"
 url="https://github.com/maemo-leste/$pkgname"
 license="GPL"
-depends=
 makedepends="glib-dev dbus-glib-dev gtk-doc libxml2-dev libtool automake autoconf m4"
 source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
 subpackages="$pkgname-dev"
-
-builddir="$srcdir/$pkgname-$pkgver"
+options="!check"
 
 build() {
 	cd "$builddir"

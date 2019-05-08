@@ -1,0 +1,25 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=osso-systemui-dbus-headers
+_pkgname=osso-systemui-dbus-dev
+pkgver=0.1.3
+pkgrel=0
+pkgdesc="Headers defining the D-Bus method calls provided by the system UI, and the signals emitted by it"
+url="https://github.com/maemo-leste/osso-systemui-dbus-dev"
+arch="noarch"
+license="LGPL-2.1"
+makedepends="doxygen"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$_pkgname/archive/$pkgver.tar.gz
+	busybox-install-incompability.patch"
+options="!check"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+	install -d -m 644 doc/html "$pkgdir"/usr/share/doc/"$_pkgname"
+}
+
+sha512sums="afa960461647ae8d15b4de43f792bf9d0e8f234979b0ec583f83fd43dc28c993a82ac0211cb6f4604abc220dc7207767c8a01204085250045d347d346442b8d8  osso-systemui-dbus-headers-0.1.3.tar.gz
+ef8b6e026481babc59114c120f86a7ab27fab28d0feb577ccf9c582f0407186eaeda5452a8bf55e69f46b685e5770c782a4b0da4843c6309987d6a240e18e4ef  busybox-install-incompability.patch"

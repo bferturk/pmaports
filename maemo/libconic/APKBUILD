@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libconic
+pkgver=0.24
+pkgrel=0
+pkgdesc="Internet connectivity library"
+url="https://github.com/maemo-leste/libconic"
+arch="all"
+license="LGPL-2.1"
+depends_dev="glib-dev dbus-glib-dev gconf-dev icd2-osso-ic-headers-dev"
+makedepends="$depends_dev autoconf automake libtool dpkg-dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+options="!check"
+
+prepare() {
+	default_prepare
+
+	cd "$builddir"
+	./autogen.sh
+}
+
+build() {
+	cd "$builddir"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="d4b6384fa4688c33b47e62cc75f4dab2640bd305871cbacadec276b6591ab48a3cc1feee8c2ffb8448525ac462884f51c465b915d79454cbf1316b2f45c2c236  libconic-0.24.tar.gz"

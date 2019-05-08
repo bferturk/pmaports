@@ -1,0 +1,45 @@
+diff --git a/cal.c b/cal.c
+index 80a44d9..2538b9c 100644
+--- a/cal.c
++++ b/cal.c
+@@ -263,7 +263,7 @@ calculate_crc32( const uint8_t *buf, size_t size)
+ }
+ 
+ static int
+-cal_nand_is_bad_eraseblock(int fd, loff_t off)
++cal_nand_is_bad_eraseblock(int fd, off64_t off)
+ {
+   int rv;
+   if ( (rv = ioctl(fd, MEMGETBADBLOCK, &off)) < 0 )
+@@ -275,10 +275,10 @@ cal_nand_is_bad_eraseblock(int fd, loff_t off)
+ }
+ 
+ static int
+-map_erase_blocks(struct cal *c,struct  cal_config *conf, uint32_t blkcnt, loff_t *off)
++map_erase_blocks(struct cal *c,struct  cal_config *conf, uint32_t blkcnt, off64_t *off)
+ {
+-  loff_t absolute;
+-  loff_t relative;
++  off64_t absolute;
++  off64_t relative;
+   uint32_t i;
+ 
+   absolute = *off;
+@@ -332,7 +332,7 @@ map_it:
+ static int
+ scan_erase_blocks(struct cal *c,unsigned int blkcnt)
+ {
+-  loff_t off;
++  off64_t off;
+ 
+   c->config[0].map =
+   c->config[1].map =
+@@ -391,7 +391,7 @@ cal_nand_scan_ebs(struct cal *c)
+   uint32_t blkcnt = 0;
+   uint32_t eraseblocks;
+ 
+-  loff_t off = 0;
++  off64_t off = 0;
+ 
+   eraseblocks = c->mtd_info.size / c->erasesize;
+   off = 0LL;
