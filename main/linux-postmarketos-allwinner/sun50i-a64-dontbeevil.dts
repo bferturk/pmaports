@@ -125,11 +125,6 @@
 	};
 };
 
-&reg_ldo_io0 {
-	status = "enabled";
-	regulator-always-on;
-};
-
 &ac_power_supply {
 	status = "okay";
 };
@@ -244,6 +239,8 @@
 	ft6236@38 {
 		compatible = "focaltech,ft6236", "edt,edt-6236";
 		reg = <0x38>;
+
+		vdd-supply = <&reg_ldo_io0>;
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&touch_intr_pin>;
