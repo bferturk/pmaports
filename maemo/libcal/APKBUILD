@@ -7,20 +7,17 @@ pkgdesc=" Interface to the configuration area "
 arch="all"
 url="https://github.com/maemo-leste/libcal"
 license="LGPL-2.1"
-depends_dev=""
 makedepends="linux-headers"
 subpackages="$pkgname-dev"
-source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz
-	fix-build.patch"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
 
 build() {
 	cd "$_builddir"
-	make
+	CFLAGS="$CFLAGS -D_GNU_SOURCE -fPIC" make
 }
 
 package() {
-	cd "$_builddir"
+	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="456f631356fcf6a550cb4b5239482ff865c32a64952d60cd8ab0430fc8d5d2adec9abf959bde14fff3bfe57394af46663610e190e7cc7b660cef1ff89e39251b  libcal-0.3.tar.gz
-0b886d38a32b9c2ddc92de84d9176bb63344bcea0ec0955c06361c40862d883e378ccf4d9afbbc01422863b43a8d760c99cc0dee7470c46ef42de1f91052838a  fix-build.patch"
+sha512sums="456f631356fcf6a550cb4b5239482ff865c32a64952d60cd8ab0430fc8d5d2adec9abf959bde14fff3bfe57394af46663610e190e7cc7b660cef1ff89e39251b  libcal-0.3.tar.gz"

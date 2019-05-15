@@ -7,8 +7,8 @@ pkgdesc="Mode Control Entity - Provides device mode logic and services for DSM i
 url="https://github.com/maemo-leste/mce"
 arch="all"
 license="LGPL-2.1"
-depends_dev=""
-makedepends="glib-dev dbus-dev gconf-dev libcal-dev dbus-glib-dev upower-dev"
+depends_dev="dsme-dev"
+makedepends="$depends_dev glib-dev dbus-dev gconf-dev libcal-dev dbus-glib-dev upower-dev osso-systemui-dbus-headers libconic-dev"
 source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
 options="!check"
 
