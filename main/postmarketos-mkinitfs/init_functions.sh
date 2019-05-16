@@ -36,6 +36,21 @@ mount_proc_sys_dev() {
 	mkdir /run
 }
 
+setup_plymouth() {
+	echo "Creating plymouth config"
+	mkdir /etc/plymouth
+	echo <<< EOL
+        [Daemon]
+	Theme=script
+	ShowDelay=0
+	DeviceTimeout=5
+	EOL > /etc/plymouth/plymouthd.conf
+	
+	echo "Starting plymouth"
+	plymouthd --mode=boot --attach-to-session --debug
+	plymouth --show-splash --debug
+}
+
 setup_mdev() {
 	echo /sbin/mdev >/proc/sys/kernel/hotplug
 	mdev -s
@@ -114,7 +129,7 @@ mount_boot_partition() {
 	partition=$(find_boot_partition)
 	if [ -z "$partition" ]; then
 		echo "ERROR: boot partition not found!"
-		show_splash /splash-noboot.ppm.gz
+		plymouth update --status="ERROR: boot partition not found!"
 		loop_forever
 	fi
 	echo "Mount boot partition ($partition)"
@@ -126,7 +141,7 @@ extract_initramfs_extra() {
 	initramfs_extra="$1"
 	if [ ! -e "$initramfs_extra" ]; then
 		echo "ERROR: initramfs-extra not found!"
-		show_splash /splash-noinitramfsextra.ppm.gz
+		plymouth update --status="ERROR: initramfs-extra not found!"
 		loop_forever
 	fi
 	echo "Extract $initramfs_extra"
@@ -135,7 +150,7 @@ extract_initramfs_extra() {
 
 wait_root_partition() {
 	while [ -z "$(find_root_partition)" ]; do
-		show_splash /splash-norootfs.ppm.gz
+		plymouth update --status="ERROR: Could not find the rootfs"
 		echo "Could not find the rootfs."
 		echo "Maybe you need to insert the sdcard, if your device has"
 		echo "any? Trying again in one second..."
@@ -180,7 +195,7 @@ unlock_root_partition() {
 			start_onscreen_keyboard
 		done
 		# Show again the loading splashscreen
-		show_splash /splash-loading.ppm.gz
+		plymouth update --status="Loading"
 	fi
 }
 
@@ -199,7 +214,7 @@ mount_root_partition() {
 	mount -t ext4 -o ro "$partition" /sysroot
 	if ! [ -e /sysroot/usr ]; then
 		echo "ERROR: unable to mount root partition!"
-		show_splash /splash-mounterror.ppm.gz
+		plymouth update --status="ERROR: unable to mount root partition!"
 		loop_forever
 	fi
 }

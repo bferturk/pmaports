@@ -36,6 +36,7 @@ start_udhcpd
 
 mount_boot_partition
 extract_initramfs_extra @INITRAMFS_EXTRA@
+setup_plymouth
 start_charging_mode
 wait_root_partition
 resize_root_partition

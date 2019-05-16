@@ -120,6 +120,11 @@ BINARIES_EXTRA="
 	/usr/sbin/parted
 	/usr/sbin/resize2fs
 	/usr/sbin/thd
+	/bin/plymouth
+	/sbin/plymouthd
+	/usr/lib/plymouth/renderers/drm.so
+	/usr/lib/plymouth/text.so
+	/usr/lib/plymouth/script.so
 "
 get_binaries()
 {
@@ -147,6 +152,23 @@ get_osk_config()
 		/etc/fb.modes
 		/etc/directfbrc
 		$fontpath
+	"
+	echo "${ret}"
+}
+
+get_plymouth_config()
+{
+	ret="
+		/usr/share/plymouth/themes/script/box.png
+		/usr/share/plymouth/themes/script/script.script
+		/usr/share/plymouth/themes/script/progress_bar.png
+		/usr/share/plymouth/themes/script/bullet.png
+		/usr/share/plymouth/themes/script/progress_box.png
+		/usr/share/plymouth/themes/script/lock.png
+		/usr/share/plymouth/themes/script/script.plymouth
+		/usr/share/plymouth/themes/script/entry.png
+		/usr/share/plymouth/themes/text/text.plymouth
+		/usr/share/plymouth/plymouthd.defaults
 	"
 	echo "${ret}"
 }
@@ -385,12 +407,14 @@ generate_initramfs_extra()
 		exit 1
 	fi
 
+	plymouth_conf="$(get_plymouth_config)"
+
 	# Ensure cache folder exists
 	mkinitfs_cache_dir="/var/cache/postmarketos-mkinitfs"
 	mkdir -p "$mkinitfs_cache_dir"
 
 	# Generate cache output filename (initfs_extra_cache) by hashing all input files
-	initfs_extra_files=$(echo "$BINARIES_EXTRA$osk_conf" | xargs -0 -I{} sh -c 'ls $1 2>/dev/null' -- {} | sort -u)
+	initfs_extra_files=$(echo "$BINARIES_EXTRA$osk_conf$plymouth_conf" | xargs -0 -I{} sh -c 'ls $1 2>/dev/null' -- {} | sort -u)
 	initfs_extra_files_hashes="$(md5sum $initfs_extra_files)"
 	initfs_extra_hash="$(echo "$initfs_extra_files_hashes" | md5sum | awk '{ print $1 }')"
 	initfs_extra_cache="$mkinitfs_cache_dir/$(basename $1)_${initfs_extra_hash}"
