@@ -3,7 +3,8 @@
 
 pkgname="musl-armhf"
 pkgver="1.1.22"
-pkgrel=0
+pkgrel=1
+_pkgrel=0
 arch="armv7 aarch64 x86_64 x86"
 subpackages="musl-dev-armhf:package_dev"
 
@@ -18,8 +19,8 @@ pkgdesc="the musl library (lib c) implementation for $_arch"
 _target="$(arch_to_hostspec $_arch)"
 
 source="
-    musl-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$pkgrel.apk
-    musl-dev-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$pkgrel.apk
+    musl-$pkgver-r$_pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$_pkgrel.apk
+    musl-dev-$pkgver-r$_pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$_pkgrel.apk
 "
 
 package() {
@@ -27,7 +28,7 @@ package() {
     cd "$pkgdir/usr/$_target"
     # Use 'busybox tar' to avoid 'tar: Child returned status 141'
     # on some machines (builds.sr.ht, gitlab-ci). See pmaports#26.
-    busybox tar -xf $srcdir/musl-$pkgver-r$pkgrel-$_arch.apk
+    busybox tar -xf $srcdir/musl-$pkgver-r$_pkgrel-$_arch.apk
     rm .PKGINFO .SIGN.*
 }
 package_dev() {
@@ -35,7 +36,7 @@ package_dev() {
     cd "$subpkgdir/usr/$_target"
     # Use 'busybox tar' to avoid 'tar: Child returned status 141'
     # on some machines (builds.sr.ht, gitlab-ci). See pmaports#26.
-    busybox tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch.apk
+    busybox tar -xf $srcdir/musl-dev-$pkgver-r$_pkgrel-$_arch.apk
     rm .PKGINFO .SIGN.*
 
     # symlink everything from /usr/$_target/usr/* to /usr/$_target/*
