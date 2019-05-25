@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=sddm-kcm
+pkgver=5.15.5
+pkgrel=0
+pkgdesc="Config module for SDDM"
+arch="all"
+url="https://cgit.kde.org/sddm-kcm.git/"
+license="GPL-2.0-only"
+depends="sddm systemsettings"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtx11extras-dev qt5-qtdeclarative-dev kcoreaddons-dev ki18n-dev kxmlgui-dev kauth-dev kconfigwidgets-dev kio-dev karchive-dev knewstuff-dev xcb-util-image-dev libxcursor-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	install_if="sddm systemsettings"
+
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="728dedc49670e2b80f48719f3b9f20407cfb580723e1b443eee789c0908d1b7ca70b6d083244df0c4d9db29a90707df50a148f775568abae417c4dfa53607535  sddm-kcm-5.15.5.tar.xz"
