@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=baloo-widgets
+pkgver=18.12.3
+pkgrel=0
+pkgdesc="Widgets for Baloo"
+arch="all"
+url="https://community.kde.org/Baloo"
+license="LGPL-2.1-only"
+depends_dev="qt5-qtbase-dev kconfig-dev kio-dev ki18n-dev kfilemetadata-dev baloo-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Requires running X11
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="40b62fd9fb204ba60f0f5d8550e33506907de11b8cc6a222071402ed4eef83d3171df6eef1be31c501dfc4b7271a05f79def095aec6d83c705dcbc52760966dc  baloo-widgets-18.12.3.tar.xz"
