@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kde-cli-tools
+pkgver=5.15.5
+pkgrel=0
+pkgdesc="Tools based on KDE Frameworks 5 to better interact with the system"
+arch="all"
+url="https://cgit.kde.org/kde-cli-tools"
+license="GPL-2.0-only LGPL-2.1-only"
+depends_dev="qt5-qtbase-dev qt5-qtsvg-dev kconfig-dev kdoctools-dev kiconthemes-dev kinit-dev ki18n-dev kcmutils-dev kio-dev kservice-dev kwindowsystem-dev kactivities-dev plasma-workspace-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="f7f9f8af72e6fe421a22bde996b5abd5ab194b7fb6b7252e63761658b143b98e8f49783b2a53f15b45c16a6dba6b064293237bd51ef7a61371293bdaea9359ff  kde-cli-tools-5.15.5.tar.xz"
