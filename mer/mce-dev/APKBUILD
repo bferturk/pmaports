@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=mce-dev
+pkgver=1.26.0
+pkgrel=0
+pkgdesc="Mers mce-dev"
+url="https://git.merproject.org/mer-core/mce-dev"
+arch="noarch"
+license="LGPL-2.1-or-later"
+makedepends="qt5-qtbase-dev doxygen"
+subpackages="$pkgname-doc"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz
+	fix-busybox-incompatibility.patch"
+options="!check" # No test suite available
+
+build(){
+	make
+	make doc
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+doc() {
+	install -dm755 "$subpkgdir"/usr/share/doc/$pkgname
+	mv "$builddir"/doc/html "$subpkgdir"/usr/share/doc/$pkgname/
+}
+
+sha512sums="a069c702ea9e5720b5ff68c37a3676c4c7b471644b96463b0e7e68dc2019eebc4d2eb1e004d3e93a095a9aa8ff004c55becfd652061b8b7b948cda61bc5fea68  mce-dev-1.26.0.tar.gz
+53a1af05dad06877105dc15fd3d1399488f7f1bea944912ed7d4d82fa8ba7c330644ab1afc1f325a60d2dfdbc60ca366d26f82906efd268399ad8f9f17259927  fix-busybox-incompatibility.patch"
