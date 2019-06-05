@@ -1,0 +1,190 @@
+diff --git a/include/cor/error.hpp b/include/cor/error.hpp
+index 72fe5d4..0d41b77 100644
+--- a/include/cor/error.hpp
++++ b/include/cor/error.hpp
+@@ -68,96 +68,6 @@ typename c_ptr_traits<T>::unique_ptr mk_cmem_handle()
+ 
+ bool is_address_valid(void *);
+ 
+-
+-struct Backtrace_ {
+-    typedef typename c_ptr_traits<char const*>::unique_ptr symbols_ptr;
+-    typedef std::pair<symbols_ptr, size_t> symbols_type;
+-    static symbols_type get_symbols(void *const *, size_t);
+-    static std::string name(size_t index, char const* existing_name, void *const * frame);
+-};
+-
+-template <size_t Frames>
+-class Backtrace : private Backtrace_
+-{
+-public:
+-    Backtrace()
+-        : count_(::backtrace(&frames[0], frames.size()))
+-        , symbols(mk_cmem_handle<char const*>())
+-    { }
+-
+-    Backtrace(Backtrace const &src)
+-        : count_(0)
+-        , symbols(mk_cmem_handle<char const*>())
+-    {
+-        count_ = src.count_;
+-        std::copy(&src.frames[0], &src.frames[count_], frames.begin());
+-        if (src.symbols) {
+-            symbols.reset((const char**)calloc(src.count_, sizeof(*symbols)));
+-            auto to = src.symbols.get(), from = symbols.get();
+-            std::copy(from, from + count_, to);
+-        }
+-    }
+-
+-    ~Backtrace() noexcept {}
+-
+-    const char **begin() const
+-    {
+-        update_symbols();
+-        return symbols.get();
+-    }
+-
+-    const char **end() const
+-    {
+-        update_symbols();
+-        return symbols.get() + count_;
+-    }
+-
+-    char const* at(size_t index) const
+-    {
+-        update_symbols();
+-        return (index < count_ && symbols) ? symbols.get()[index] : "???";
+-    }
+-
+-    bool dladdr(size_t index, Dl_info &info) const
+-    {
+-        return (index < count_) && (::dladdr(frames[index], &info) != 0);
+-    }
+-
+-    std::string name(size_t index) const
+-    {
+-        return (index < count_)
+-            ? Backtrace_::name(index, at(index), &frames[index])
+-            : "?";
+-    }
+-
+-    size_t size() const
+-    {
+-        return count_;
+-    }
+-
+-private:
+-
+-    void update_symbols() const
+-    {
+-        if (!symbols)
+-            std::tie(symbols, count_) = Backtrace_::get_symbols(&frames[0], count_);
+-    }
+-
+-    std::array<void*, Frames> frames;
+-    mutable size_t count_;
+-
+-    mutable Backtrace_::symbols_ptr symbols;
+-};
+-
+-template <typename T, size_t N>
+-std::basic_ostream<T>& operator <<
+-(std::basic_ostream<T> &dst, Backtrace<N> const &src)
+-{
+-    for (size_t i = 0; i < src.size(); ++i)
+-        dst << i << ": " << src.name(i) << std::endl;
+-    return dst;
+-}
+-
+ static inline std::string mk_error_message(std::string const &info)
+ {
+     return info;
+@@ -195,10 +105,8 @@ public:
+ 
+     virtual void print_trace() const
+     {
+-        std::cerr << trace;
++        //std::cerr << trace;
+     }
+-
+-    Backtrace<30> trace;
+ };
+ 
+ class CError : public Error
+diff --git a/include/cor/trace.hpp b/include/cor/trace.hpp
+index 3e68733..720c099 100644
+--- a/include/cor/trace.hpp
++++ b/include/cor/trace.hpp
+@@ -38,7 +38,6 @@ static inline std::string caller_name(size_t level = 3)
+ {
+     if (level > 4)
+         return "? level>4";
+-    cor::Backtrace<5> bt;
+     return bt.name(level);
+ }
+ 
+diff --git a/src/error.cpp b/src/error.cpp
+index 3608d9c..6eb05eb 100644
+--- a/src/error.cpp
++++ b/src/error.cpp
+@@ -16,31 +16,4 @@ bool is_address_valid(void *p)
+     return res;
+ }
+ 
+-Backtrace_::symbols_type
+-Backtrace_::get_symbols(void *const *frames, size_t count)
+-{
+-    auto symbols = mk_cmem_handle<char const*>
+-        (const_cast<char const**>(backtrace_symbols(frames, count)));
+-
+-    if (!symbols) {
+-        symbols.reset(static_cast<char const**>(::calloc(1, sizeof(*symbols))));
+-        *symbols = "?";
+-        count = 1;
+-    }
+-    return std::make_pair(std::move(symbols), count);
+-}
+-
+-std::string Backtrace_::name
+-(size_t, char const* existing_name, void *const * frame)
+-{
+-    Dl_info info;
+-    int status = -1;
+-    auto p = mk_cmem_handle<char>();
+-    if (dladdr(frame, &info) && info.dli_sname)
+-        p.reset(abi::__cxa_demangle(info.dli_sname, NULL, 0, &status));
+-
+-    return p ? std::string(p.get()) : std::string(existing_name);
+-}
+-
+-
+ }
+diff --git a/tests/error.cpp b/tests/error.cpp
+index 8b8105d..cfc83c4 100644
+--- a/tests/error.cpp
++++ b/tests/error.cpp
+@@ -36,20 +36,20 @@ void object::test<tid_error_dump>()
+     try {
+         fn1();
+     } catch (cor::Error const &e) {
+-        depth1 = e.trace.end() - e.trace.begin();
++        /*depth1 = e.trace.end() - e.trace.begin();
+         std::for_each(e.trace.begin(), e.trace.end()
+                       , [&traces1](char const *p) {
+                           traces1.push_back(p);
+-                      });
++                      });*/
+     }
+     try {
+         fn2();
+     } catch (cor::Error const &e) {
+-        depth2 = e.trace.end() - e.trace.begin();
++        /*depth2 = e.trace.end() - e.trace.begin();
+         std::for_each(e.trace.begin(), e.trace.end()
+                       , [&traces2](char const *p) {
+                           traces2.push_back(p);
+-                      });
++                      });*/
+     }
+     ensure_eq("Similar depths", depth1, depth2);
+     auto it1 = traces1.begin();

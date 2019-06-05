@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=cor
+pkgver=0.1.18
+pkgrel=0
+pkgdesc="Just another C++/C library, contains everything generic/useful can be shared between different apps/libraries"
+url="https://git.merproject.org/mer-core/cor"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="eudev-dev libexecinfo-dev"
+makedepends="$depends_dev cmake tut linux-headers"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz
+	gcc7.patch
+	remove-backtrace.patch
+	"
+
+build(){
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DVERSION=$pkgver
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	rm -r "$pkgdir/opt"
+}
+
+sha512sums="e7ebf93bad78622e36e441b34e2bb015e9f65e321a922bc2c186058780d4e1f0af2a0ccc1ff45bd5fea10ddfc5b487678ec5f8e230d1a0cd3ac82adc60546f3c  cor-0.1.18.tar.gz
+749abd795376b6027419ed65c0b5643e244c864d251b19800385f21792601edc7e0ae9dc92bf5601bfc0a1538bc1f3f164fe0596fe6a90fc168e6889c80856e8  gcc7.patch
+6613241f77eea09f031ccca27d52b441f0194e30d4e1eda73960563a2dbc404e3728e4b402a2dbc666a117f72737ae57d0e395d001ae0a5a6303c7f0a20c9a59  remove-backtrace.patch"
