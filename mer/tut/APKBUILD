@@ -1,0 +1,23 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=tut
+pkgver=0.0.4
+pkgrel=0
+pkgdesc="A small and portable unit test framework for C++"
+url="https://git.merproject.org/mer-core/tut"
+arch="noarch"
+license="BSD-2-Clause"
+depends_dev=""
+makedepends="$depends_dev python2"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+
+build(){
+	python2 waf configure --prefix=/usr
+	python2 waf build
+}
+
+package() {
+	python2 waf install --destdir="$pkgdir"
+}
+
+sha512sums="6a1688b32f3c6e150fb7ebb2b869fc791bc2dbd2a414368b05b2febbfe260775f2a8bd64ec4e22161095e5ead1e18544c73fa2b55822c8448fa7edab1d7aa206  tut-0.0.4.tar.gz"
