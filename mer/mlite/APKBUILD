@@ -1,0 +1,26 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=mlite
+pkgver=0.2.27
+pkgrel=0
+pkgdesc="Useful classes originating from MeeGo Touch"
+url="https://git.merproject.org/mer-core/mlite"
+arch="all"
+license="LGPL-2.1-only"
+depends_dev="dconf-dev"
+makedepends="$depends_dev qt5-qtbase-dev qt5-qttools-dev"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+
+build(){
+	qmake-qt5
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+
+	rm -r "$pkgdir/opt"
+}
+
+sha512sums="8473955ec8c370f35ff4c3592afadb3f44c230d9a930980bb41d481adc8abc6f7fc1067f0e4c74fb91297ecb59b30f316dbd50ecbc3f590a824412e9ba70994e  mlite-0.2.27.tar.gz"
