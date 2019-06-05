@@ -1,0 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libiphb
+pkgver=1.2.5
+_pkgver=$pkgver+git1
+pkgrel=0
+pkgdesc="Nemo's libiphb"
+url="https://git.merproject.org/mer-core/libiphb"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="glib-dev dbus-dev dbus-glib-dev mce-dev libdsme-dev"
+makedepends="$depends_dev libtool automake autoconf"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$_pkgver/$pkgname-$_pkgver.tar.gz"
+options="!check" # No suitable tests
+builddir="$srcdir/$pkgname-$_pkgver"
+
+prepare() {
+	default_prepare
+
+	./autogen.sh
+}
+
+build(){
+	./configure \
+		--prefix=/usr
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	# Remove tests
+	rm -rf "$pkgdir"/opt
+}
+
+sha512sums="aa69f77efae8a0529e6f2b4479cbb873802875bd685b64a16d76889afadd153f792e8481142741bfca41125944a5dbf61032e0d5871cfd06b255ae16d91b543a  libiphb-1.2.5+git1.tar.gz"
