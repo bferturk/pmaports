@@ -1,0 +1,30 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=keepalive
+_pkgname=nemo-keepalive
+pkgver=1.7.0
+pkgrel=0
+pkgdesc="Nemo's Keepalive"
+url="https://git.merproject.org/mer-core/nemo-keepalive"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="qt5-qtdeclarative-dev libiphb-dev mce-dev"
+makedepends="$depends_dev qt5-qtbase-dev qtchooser"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://git.merproject.org/mer-core/$_pkgname/-/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
+options="!check" # No suitable tests
+builddir="$srcdir/$_pkgname-$pkgver"
+
+build(){
+	qmake-qt5
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+
+	# Remove tests
+	rm -rf "$pkgdir"/opt
+}
+
+sha512sums="3d56935ad2e66fe792b8f9ea996837fc2bb7508813695a9ce56797364cfb797962897b31ccef9e4d293650e56989573432a8110ded8e0ced151a25e81ed4dca5  nemo-keepalive-1.7.0.tar.gz"
