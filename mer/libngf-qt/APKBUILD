@@ -1,0 +1,29 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libngf-qt
+pkgver=0.6.2
+pkgrel=0
+pkgdesc="Qt-based client for NGF daemon (Non-Graphic Feedback)."
+url="https://git.merproject.org/mer-core/libngf-qt"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev"
+makedepends="$depends_dev"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+options="!check" # No suitable tests
+
+build(){
+	qmake-qt5 \
+		PREFIX=/usr
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+
+	# Remove tests
+	rm -rf "$pkgdir"/opt
+}
+
+sha512sums="9dd53ee57eaf9ea8b191cfd22175f6460ce18fd1391ff7fc95f4886db5e72b9219bebada316b19a1144d3b6a6d8af1e761ea578f7f25c2e153a8bbcb976a1c8f  libngf-qt-0.6.2.tar.gz"

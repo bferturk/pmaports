@@ -1,0 +1,27 @@
+diff --git a/src/compositor/alienmanager/alienmanager.pri b/src/compositor/alienmanager/alienmanager.pri
+index 6c05d409..3f921c09 100644
+--- a/src/compositor/alienmanager/alienmanager.pri
++++ b/src/compositor/alienmanager/alienmanager.pri
+@@ -10,4 +10,4 @@ SOURCES += \
+ 
+ WAYLANDSERVERSOURCES += ../protocol/alien-manager.xml \
+ 
+-QT += compositor
++QT += waylandcompositor
+diff --git a/src/compositor/compositor.pri b/src/compositor/compositor.pri
+index d988a93e..0e2d89ca 100644
+--- a/src/compositor/compositor.pri
++++ b/src/compositor/compositor.pri
+@@ -38,10 +38,10 @@ SOURCES += \
+ 
+ DEFINES += QT_COMPOSITOR_QUICK
+ 
+-QT += compositor
++QT += waylandcompositor
+ 
+ # needed for hardware compositor
+-QT += quick-private gui-private core-private compositor-private qml-private
++QT += quick-private gui-private core-private waylandcompositor-private qml-private
+ 
+ WAYLANDSERVERSOURCES += ../protocol/lipstick-recorder.xml \
+ 

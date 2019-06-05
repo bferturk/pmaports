@@ -1,0 +1,25 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=lipstick
+pkgver=0_git20190501
+pkgrel=0
+_commit="41afe3a5de289648358542b73583f942633e3143"
+pkgdesc="Memo's Lipstick"
+url="https://git.merproject.org/mer-core/lipstick"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsensors-dev qt5-qtwayland-dev mlite-dev mce-dev keepalive-dev libresourceqt-dev libngf-qt-dev libngf-dev"
+makedepends="$depends_dev doxygen graphviz qt5-qttools-dev qtchooser"
+source="$pkgname-$_commit.tar.gz::https://github.com/asteroidos/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+build(){
+	qmake-qt5
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="c8973f5826146865f6054f1ef78a87e990454f8d93c497735baa5b64d3126945e3117e3237189051c07a7b6303b610f206aed6aed6cb75921726fe6dae158d61  lipstick-41afe3a5de289648358542b73583f942633e3143.tar.gz"
