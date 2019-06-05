@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libresourceqt
+pkgver=1.30.3
+pkgrel=0
+pkgdesc="Nemo's libresourceqt"
+url="https://git.merproject.org/mer-core/libresourceqt"
+arch="all"
+license="LGPL-2.1-or-later"
+makedepends="qt5-qtbase-dev libresource-dev"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+options="!check" # No suitable tests
+
+build(){
+	qmake-qt5
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+
+	# Remove tests
+	rm -rf "$pkgdir"/opt
+}
+
+sha512sums="4d0eb38ad84ea046d6066491a9ba02b4dc3a9a88a3e22483c0c2dd7c4669a0cde588c047c486995735ed007084780472d4df764629a668148d3d227d2b4d6ed1  libresourceqt-1.30.3.tar.gz"
