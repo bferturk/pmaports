@@ -1,0 +1,30 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libdsme
+pkgver=0.66.1
+pkgrel=0
+pkgdesc="Libraries for programs that communicate with the Device State Management Entity"
+arch="all"
+url="https://git.merproject.org/mer-core/libdsme"
+license="LGPL-2.1-or-later"
+depends="dbus glib"
+depends_dev="glib-dev check-dev"
+makedepends="$depends_dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz
+	fix-musl-incompatibility.patch
+	"
+options="!check" # No suitable tests
+
+build() {
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	# Remove tests
+	rm -rf "$pkgdir"/opt
+}
+sha512sums="85ca8b31d4100404a14d1365b9c72074068db2f935b2621f919581b0fcd78a00c020ddce74a31c0acb0ea80d59ff49845a5477e7b0cdb7faad59c8e6deacd60f  libdsme-0.66.1.tar.gz
+2e9da2f195dbf8da999598d7074737ce743b36029e089d15dc3d2c04e7e7fc5c6662ebe099c0d0cbf8c0afe2b9256863e235fb6cc99f197bc76439758cd3536f  fix-musl-incompatibility.patch"

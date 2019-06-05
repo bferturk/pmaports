@@ -1,0 +1,15 @@
+diff --git a/include/dsme/messages.h b/include/dsme/messages.h
+index 3c4eb30..d96c8a9 100644
+--- a/include/dsme/messages.h
++++ b/include/dsme/messages.h
+@@ -30,6 +30,10 @@
+ #include <stddef.h>
+ #include <sys/types.h>
+ 
++#include <stdint.h>
++typedef uint32_t u_int32_t;
++typedef uint8_t u_int8_t;
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
