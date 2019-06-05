@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libngf
+pkgver=0.26
+pkgrel=0
+pkgdesc="Nemo's libngf"
+url="https://git.merproject.org/mer-core/libngf"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="glib-dev dbus-dev dbus-glib-dev check-dev"
+makedepends="$depends_dev automake autoconf libtool"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+options="!check" # No suitable tests
+
+prepare() {
+	default_prepare
+
+	./autogen.sh
+}
+
+build() {
+	./configure \
+		--prefix=/usr
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	# Remove tests
+	rm -rf "$pkgdir"/opt
+}
+
+sha512sums="77d8d4000035b2be1bae051b9ea268a36ceeb24d580284228d7590cb3c483ebc2a6cccf924c6cbc78dece68c4a267a3458be467d65ad1b96b267ca6e0229c747  libngf-0.26.tar.gz"
