@@ -1,0 +1,29 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=statefs-contextkit
+pkgver=0.2.29
+pkgrel=0
+pkgdesc="Useful classes originating from MeeGo Touch"
+url="https://github.com/nemomobile/statefs-context"
+arch="all"
+license="LGPL-2.1-only"
+depends_dev="qt5-qtbase-dev cor-dev statefs-dev"
+makedepends="$depends_dev cmake"
+subpackages="$pkgname-dev"
+source="https://github.com/nemomobile/$pkgname/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+options="!check" # No test suite available
+
+build(){
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DSTATEFS_QT_VERSION=5 \
+		-DUSEQT=5
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="a381fe4047f2e356394d8bf54c175a3e5488283daf5e3154fc0d1d46a369a617137d1cf72ec7cf172118653954a13c5afd80cc481c560069ed101f3e65f9a7ba  statefs-contextkit-0.2.29.tar.gz"
