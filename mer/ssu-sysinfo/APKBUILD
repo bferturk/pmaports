@@ -1,0 +1,25 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=ssu-sysinfo
+pkgver=1.2.0
+pkgrel=0
+pkgdesc="Mer's ssu-sysinfo"
+url="https://git.merproject.org/mer-core/ssu-sysinfo"
+arch="all"
+license="LGPL-2.1-or-later AND BSD-3-Clause"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz
+	fix-library-linking.patch
+	"
+options="!check" # No test suite available
+
+build() {
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="12782c50681a265b852a451e6b59c73b4357b366a689559c74fb59e6bfbaa390d25479962315ec78345a398d15150afb8b6444566881c47ddd38f87f144ed652  ssu-sysinfo-1.2.0.tar.gz
+a1eeb088a01bcb1bbff75850841176d6dd85469b2aa5f8a1ea797541b146d34027321844db7068daf8a2eda6fe19c3c78fbdd8db1cfa65c18633dc71ef1d88b5  fix-library-linking.patch"
