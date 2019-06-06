@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=statefs
+pkgver=0.3.35
+pkgrel=0
+pkgdesc="A syntetic filesystem to expose current system state provided by StateFS plugins as properties wrapped into namespaces"
+url="https://git.merproject.org/mer-core/statefs"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="fuse-dev cor-dev boost-dev"
+makedepends="$depends_dev cmake doxygen graphviz"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+options="!check" # No test suite available
+
+build(){
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DVERSION=$pkgver
+	make
+	make doc
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	rm -r "$pkgdir/opt"
+}
+
+sha512sums="cec48004d2f7d52e11618c82f1df036b93edc2d64377266691f10d82be33f46aed1e1ec192dd39c449258214141f18dbc07af48bf88b54b126cbc72cfec49d8b  statefs-0.3.35.tar.gz"
