@@ -1,6 +1,7 @@
 # Forked from Alpine to build for pine64
+# Added rockpro64 support which got mainline u-boot in 2019-05-30
 pkgname=u-boot
-pkgver=2019.04
+pkgver=2019.07_rc3
 pkgrel=0
 _atfversion="2.1"
 pkgdesc="u-boot bootloader common files"
@@ -8,11 +9,12 @@ url="http://www.denx.de/wiki/U-Boot/"
 arch="armhf armv7 aarch64"
 license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
 	ISC LGPL-2.0-only LGPL-2.1-only X11"
-makedepends="$depends_dev bc dtc python2-dev swig bison flex"
+makedepends="$depends_dev bc dtc python2-dev swig bison flex gcc-arm-none-eabi"
 source="http://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
 	arm-trusted-firmware-${_atfversion}.tar.gz::https://github.com/ARM-software/arm-trusted-firmware/archive/v${_atfversion}.tar.gz
 	README.txt
 	update-u-boot
+	v2019.07-rc3...051c755.patch
 	"
 builddir="$srcdir"/u-boot-${pkgver//_/-}
 atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
@@ -34,6 +36,7 @@ aarch64) board_configs="
 	libretech:libretech-cc
 	qemu:qemu_arm64
 	pine64:pine64-lts
+	rockpro64:rockpro64-rk3399
 	";;
 esac
 
@@ -48,12 +51,9 @@ build() {
 		msg "Building ARM trusted firmware for allwinner"
 		cd "$atfbuilddir"
 		LDFLAGS="" make PLAT=sun50i_a64 DEBUG=1 bl31
-		export BL31="$atfbuilddir"/build/sun50i_a64/debug/bl31.bin
-		# Sanity check $BL31
-		if [ ! -f "$BL31" ]; then
-			echo 'The $BL31 variable is invalid. Please adjust.'
-			return 1
-		fi
+		
+		msg "Building ARM trusted firmware for rockchip"
+		LDFLAGS="" make PLAT=rk3399 bl31
 	fi
 
 	cd "$builddir"
@@ -67,6 +67,21 @@ build() {
 		for board in ${configs//,/ }; do
 			msg "Building u-boot for $board"
 			export BUILD_DIR="$builddir"/build/$board
+
+			case "$board" in
+				pine64-lts)	
+					export BL31="$atfbuilddir"/build/sun50i_a64/debug/bl31.bin
+					if [ ! -f "$BL31" ]; then
+						echo 'The $BL31 variable is invalid. Please adjust.'
+						return 1
+					fi
+					;;
+				rockpro64-rk3399)	
+					BL31="$atfbuilddir"/build/rk3399/release/bl31/bl31.elf
+					cp "$BL31" "$builddir"
+					;;
+			esac
+
 			mkdir -p "$BUILD_DIR"
 			make O="$BUILD_DIR" ${board}_config || return 1
 			make O="$BUILD_DIR" all || return 1
@@ -99,7 +114,7 @@ _split_boards() {
 		mkdir -p "$subpkgdir"/usr/share/$pkgname/$board
 		export BUILD_DIR="$builddir"/build/$board
 		local ok=no
-		for image in u-boot-sunxi-with-spl.bin -- MLO SPL u-boot.img -- u-boot.bin; do
+		for image in u-boot-sunxi-with-spl.bin -- u-boot.img spl/u-boot-spl-dtb.bin -- MLO SPL u-boot.img -- u-boot.bin; do
 			if [ "$image" = "--" ]; then
 				[ "$ok" = yes ] && break
 				continue
@@ -120,7 +135,8 @@ for board_config in $board_configs; do
 	eval "${_board}() { _split_boards $_board ${_configs//,/ }; }"
 done
 
-sha512sums="357fe94b5b043885472ea1b7dcbbac601d0c1f7c64f71026b9e1279b53160847c6478d6ec98a2f678e562db21e39037d6e6fbc1e6b19beaac02ca14e93c5de0e  u-boot-2019.04.tar.bz2
+sha512sums="38fee28035822913ab0454a1df0835e29ca04416a965b06b449c96fa03f393f1e564c929f67c9da919ede442d7a5b67cc3361dfbe0ee5e50a85ffdfe57a44912  u-boot-2019.07-rc3.tar.bz2
 9b557ce5f7dc272a0cc0b955ef77fe8f00c8ed01261a2cad29bb2efba3f278e81f1061c809096c97589c7075e5d39be1abd22c8c6a9cf8aaff157f640d36d22c  arm-trusted-firmware-2.1.tar.gz
 f8c9bb6e84d6f0620c976ac7ad5dd7ec7ff9dfdd4b1d03d2bf6653e7beccf80bdf2debfc92fb1f696dba92fb40287d3c45897e0078951451d0835cb61a5f16d1  README.txt
-f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot"
+f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot
+5f889a5d7c0315a6203ff231e5c40f799cd18daa36472d09a3dc4b518ed7dcd234a140cc6cd10fb766fa63b2578436ccfda0295dada67f3b41733fb91ef2af97  v2019.07-rc3...051c755.patch"
