@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/deviceinfo>
+# Please use double quotes only. You can source this file in shell scripts.
+
+deviceinfo_format_version="0"
+deviceinfo_name="PINE64 RockPro64"
+deviceinfo_manufacturer="PINE64"
+deviceinfo_codename="pine-rockpro64"
+deviceinfo_date=""
+deviceinfo_dtb="rockchip/rk3399-rockpro64"
+deviceinfo_modules_initfs=""
+deviceinfo_arch="aarch64"
+
+# Device related
+deviceinfo_keyboard="false"
+deviceinfo_external_storage="true"
+deviceinfo_screen_width="1920"
+deviceinfo_screen_height="1080"
+deviceinfo_dev_touchscreen=""
+deviceinfo_dev_touchscreen_calibration=""
+deviceinfo_dev_keyboard=""
+
+# Bootloader related
+deviceinfo_flash_method="none"
+deviceinfo_generate_legacy_uboot_initfs="true"
+deviceinfo_sd_embed_firmware="u-boot/rockpro64-rk3399/u-boot-spl-dtb-rksd.bin:16,u-boot/rockpro64-rk3399/u-boot.img:8192"
+

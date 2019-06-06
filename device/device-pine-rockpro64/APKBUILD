@@ -1,0 +1,64 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-pine-rockpro64"
+pkgdesc="PINE64 RockPro 64"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
+depends="postmarketos-base linux-postmarketos-stable u-boot-rockpro64 uboot-tools mesa mesa-dri-lima mesa-dri-kmsro"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	uboot-script.cmd
+	weston.ini
+	xorg.conf
+	start_weston.sh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	mkimage -n rk3399 -T rksd -d /usr/share/u-boot/rockpro64-rk3399/u-boot-spl-dtb.bin "$srcdir"/spl.bin
+	mkimage -A arm -O linux -T script -C none -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/spl.bin \
+		"$pkgdir"/usr/share/u-boot/rockpro64-rk3399/u-boot-spl-dtb-rksd.bin
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+x11() {
+        install_if="$pkgname xorg-server"
+        depends="
+                libinput
+                xf86-input-libinput
+                xf86-video-fbdev"
+        install -Dm644 "$srcdir"/xorg.conf \
+                "$subpkgdir"/etc/X11/xorg.conf.d/10-framebuffer.conf
+}
+
+weston() {
+        install_if="$pkgname weston"
+        install -Dm644 "$srcdir"/weston.ini \
+                "$subpkgdir"/etc/xdg/weston/weston.ini
+        install -Dm755 "$srcdir"/start_weston.sh \
+                "$subpkgdir"/etc/profile.d/000_start_weston.sh
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi and Bluetooth firmware"
+	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-rtl8723bt"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="911d5de8c549cbabceba6479b30fd1f8628938a5fd466423eb872bc7b6ed21b0b0c7c13a278a16e6a3e4cd7916964b67c94c9220cdc19520cebdfbb35139ea83  deviceinfo
+39d5774db3bd1a13aa43cb8aa72f60b6c4b8bb6d3bf1ab73a40091b3ccbd36af15aeff71f1983ee968615bf67c1815da36ffcb26d74e2754f847ace8d20a36fd  uboot-script.cmd
+c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
+aa11864b9960e94e13b1467e09d8eb528e3d3652bf1fb251c7a040f4d44270403072db8aa906405d4c81fa9d6043fafa8d9ccd1f97031fd96d0dcacc38da8f84  start_weston.sh"
