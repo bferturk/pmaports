@@ -1,0 +1,36 @@
+diff --git a/src/usb_moded-modesetting.h b/src/usb_moded-modesetting.h
+index 7c3a997..a7905d1 100644
+--- a/src/usb_moded-modesetting.h
++++ b/src/usb_moded-modesetting.h
+@@ -57,3 +57,13 @@ void modesetting_quit              (void);
+      modesetting_write_to_file_real(__FILE__,__LINE__,__FUNCTION__,(path),(text))
+ 
+ #endif /* USB_MODED_MODESETTING_H_ */
++
++/* taken from glibc unistd.h and fixes musl */
++#ifndef TEMP_FAILURE_RETRY
++#define TEMP_FAILURE_RETRY(expression) \
++  (__extension__                        		                      \
++    ({ long int __result;                                                     \
++       do __result = (long int) (expression);                                 \
++       while (__result == -1L && errno == EINTR);                             \
++       __result; }))
++#endif
+diff --git a/src/usb_moded-sigpipe.h b/src/usb_moded-sigpipe.h
+index 84a570d..7a0eadd 100644
+--- a/src/usb_moded-sigpipe.h
++++ b/src/usb_moded-sigpipe.h
+@@ -35,3 +35,13 @@
+ bool sigpipe_init(void);
+ 
+ #endif /* USB_MODED_SIGPIPE_H_ */
++
++/* taken from glibc unistd.h and fixes musl */
++#ifndef TEMP_FAILURE_RETRY
++#define TEMP_FAILURE_RETRY(expression) \
++  (__extension__                                                              \
++    ({ long int __result;                                                     \
++       do __result = (long int) (expression);                                 \
++       while (__result == -1L && errno == EINTR);                             \
++       __result; }))
++#endif

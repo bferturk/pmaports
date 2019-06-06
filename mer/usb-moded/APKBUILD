@@ -1,0 +1,44 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=usb-moded
+pkgver=0.86.0
+_pkgver=mer/$pkgver+mer36
+_commit="056b589d3d1adb801a5f18e00d9119805d5d5beb"
+pkgrel=0
+pkgdesc="A daemon activating a certain USB profile based on the usb cable connection status"
+url="https://git.merproject.org/mer-core/usb-moded"
+arch="all"
+license="GPL-2.0-only"
+makedepends="$depends_dev automake autoconf libtool dbus-dev glib-dev dbus-glib-dev gobject-introspection-dev eudev-dev kmod-dev libdsme-dev elogind-dev ssu-sysinfo-dev ssu-sysinfo"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$_pkgver/$pkgname-$_pkgver.tar.gz
+	fix-musl-incompatibility.patch"
+options="!check" # No test suite available
+builddir="$srcdir/$pkgname-${_pkgver/\//-}-$_commit"
+
+prepare() {
+	default_prepare
+
+	./autogen.sh
+}
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--enable-connman \
+		--enable-ofono
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	# The pkg-config file isn't installed automatically for some reason
+	install -dm 755 "$pkgdir"/usr/lib/pkgconfig
+	install -m 644 usb_moded.pc "$pkgdir"/usr/lib/pkgconfig/
+
+	install -dm 755 "$pkgdir"/usr/include/$pkgname
+	cp src/*.h src/*.xml "$pkgdir"/usr/include/$pkgname
+}
+
+sha512sums="1d1ffd55cb6642fa4a7d136b07da8519a621a6310d929fef86f931cd662ef81b64586d84dd2d598aa216c0bdd00e6ea303c53355e7b9c750ba6ce2f28f9ca60c  0.86.0+mer36.tar.gz
+1736a118f7254e6b449ad91d87616b6e58c59d09a0608b6e5c8e09fa32ec09ad4a2a718d8b86ac80bda52f0eaafdf34e14cbd8ff42cc0bc20433e88fa285498b  fix-musl-incompatibility.patch"
