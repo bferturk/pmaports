@@ -1,0 +1,26 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=usb-moded-qt
+_pkgname=lib$pkgname
+pkgver=1.8
+pkgrel=0
+pkgdesc="Mer's libusb-moded-qt"
+url="https://git.merproject.org/mer-core/libusb-moded-qt"
+arch="all"
+license="BSD-2-Clause"
+depends_dev="qt5-qtbase-dev"
+makedepends="$depends_dev usb-moded"
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$_pkgname/-/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+build(){
+	qmake-qt5 PREFIX=/usr
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+}
+
+sha512sums="62cc257600aded9438dfb8b4e70ad2b5322379753019617171cd64b555155ac316137251644063e3adb5dadf33f4764daeaf7518b3c6f6b82ce0fbf84526cca1  libusb-moded-qt-1.8.tar.gz"
