@@ -1,0 +1,47 @@
+# Forked from Alpine to revert a commit which is required by AsteroidUI
+pkgname=qt5-qtwayland
+_pkgname="${pkgname/qt5-/}-everywhere-src"
+pkgver=9999
+_pkgver=5.12.3
+pkgrel=0
+arch="all"
+url="http://qt-project.org/"
+license="LGPL-2.0 with exceptions or GPL-3.0 with exceptions"
+pkgdesc='Provides APIs for Wayland'
+makedepends="$depends_dev libxkbcommon-dev libxcomposite-dev
+	qt5-qtquickcontrols2-dev qt5-qtdeclarative-dev qt5-qtbase-dev wayland-dev"
+subpackages="$pkgname-dev $pkgname-doc"
+builddir="$srcdir/$_pkgname-$_pkgver"
+
+case $pkgver in
+*_beta*|*_rc*) _rel=development_releases;;
+*) _rel=official_releases;;
+esac
+
+source="http://download.qt.io/$_rel/qt/${_pkgver%.*}/${_pkgver}/submodules/$_pkgname-$_pkgver.tar.xz
+	0003-Revert-Remove-QWaylandExtendedSurface-from-the-priva.patch
+	"
+
+build() {
+	qmake-qt5
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+
+	# Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+	find "$pkgdir/usr/lib" -type f -name '*.prl' \
+		-exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+	install -d "$pkgdir"/usr/share/licenses
+	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
+}
+sha512sums="e66f9f41c15cf84165e559a1ff09e20ec21bb3f909b57fab08b0e3f8f9eeacf75d49541b499b1a6514a34d1ba5dd426ec1ce77719910588afa12cb3a7980dc90  qtwayland-everywhere-src-5.12.3.tar.xz
+013b85d4fc65edfbdbee371116a63d1efb45e17cb8854e543120d76851dd7e637404cc3d9577286382732bda843a14e00c7a88e65069cad6c5a149e165d669bd  0003-Revert-Remove-QWaylandExtendedSurface-from-the-priva.patch"
