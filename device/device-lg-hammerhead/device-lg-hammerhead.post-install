@@ -1,4 +1,7 @@
 #!/bin/sh
 
+# Start a shell on the headphone connector (lol)
+echo "ttyMSM0::respawn:/sbin/getty -L ttyMSM0 115200 vt100" >> /etc/inittab
+
 # Enable ofono
 rc-update add ofono default
