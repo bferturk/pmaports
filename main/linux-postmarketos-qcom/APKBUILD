@@ -11,7 +11,7 @@ pkgdesc="Kernel close to mainline with extra patches for Qualcomm devices"
 url="https://kernel.org/"
 makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
-_commit="ace506c833cc079181ba4662639d45467854a7ee"
+_commit="f1163f1d8ee8895ab1e467b8a9867838cff3422a"
 source="
 	linux-${_commit}.tar.gz::https://github.com/masneyb/linux/archive/${_commit}.tar.gz
 	config-${_flavor}.armhf
@@ -159,6 +159,6 @@ dev() {
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
 
-sha512sums="02f924712d1199688580b237f104da58fc4989a04142532ed688e6596647017e0905a3af3fb7bc5a5712d72952cef899085b698665997ed3715f68fb5c91085c  linux-ace506c833cc079181ba4662639d45467854a7ee.tar.gz
+sha512sums="404d93112b24c263fd8cdec9fd1f607e02fb4e52c701dfbabde7b7e3d8811dcc04fe802bfc2cdd6832f1911f813bb64774df369535b712f7a3c5faa878d0ee2b  linux-f1163f1d8ee8895ab1e467b8a9867838cff3422a.tar.gz
 fc151402f33f947fdfb1a0f60f7dee621b2299678c14bbc2d3425c22b3300795cddfba8635f3d2d9a409ea506e825d00957bffe14d54cd14612d364a1d03529a  config-postmarketos-qcom.armhf
-eafba1b314a3a78233471e2ec68f41ecc827b76b69bdd441c389fc0e9da50a0a4dd548d9ee52704a5362eb108df8cac79b19f8e8b94d0821b6691dd8ef0ca880  config-postmarketos-qcom.armv7"
+fba052e164cbb5455a69b335d989b7fab8a67ea29d0cb0d401fd051a275c98c779b5bd176ea1fa5cab7d1e6d5cbad4a91a5a4b63b7f3e3e5406947b65c5d8078  config-postmarketos-qcom.armv7"
