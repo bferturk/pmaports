@@ -38,6 +38,7 @@ mount_proc_sys_dev() {
 
 setup_mdev() {
 	echo /sbin/mdev >/proc/sys/kernel/hotplug
+	sleep 1
 	mdev -s
 }
 
@@ -231,7 +232,6 @@ setup_usb_network_configfs() {
 	fi
 
 	echo "  Setting up an USB gadget through configfs"
-	
 	# Create an usb gadet configuration
 	mkdir $CONFIGFS/g1 || echo "  Couldn't create $CONFIGFS/g1"
 	printf "%s" "0x18D1" >"$CONFIGFS/g1/idVendor"
