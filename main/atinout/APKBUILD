@@ -1,0 +1,23 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname="atinout"
+pkgver="0.9.1"
+pkgrel=0
+pkgdesc="AT commands as input are sent to modem and responses given as output"
+url="http://atinout.sourceforge.net/index.html"
+arch="all"
+license="GPL-3"
+subpackages="$pkgname-doc"
+source="https://netcologne.dl.sourceforge.net/project/atinout/v$pkgver/atinout-$pkgver.tar.gz
+	0001-make-gcc-happy-by-adding-fallthrough-comment.patch"
+options="!check" # No test suite
+
+build() {
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="ae25b2c4f3e2a9b861a7fc7d8e469d0d9d7a230281266393ce8547abca7e2368a709db3293ca31c00d5599b1de12ae9c8cd2bc0beefce53fa30012b6a2d7764b  atinout-0.9.1.tar.gz
+bbfb5d26b21964d217bd8404df02b19f061e6a6f963253f8a7c08622010f3d38103ca921fda382414735691eee21a04ef61db61b61fb0a1b7ff35b26b02a02ea  0001-make-gcc-happy-by-adding-fallthrough-comment.patch"
