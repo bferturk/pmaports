@@ -2,7 +2,7 @@
 pkgname="device-pine-dontbeevil"
 pkgdesc="PINE64 PinePhone Don't be evil devkit"
 pkgver=0.1
-pkgrel=7
+pkgrel=8
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -14,7 +14,7 @@ subpackages="
 	$pkgname-kernel-shortts:kernel_shortts
 	$pkgname-kernel-longts:kernel_longts
 "
-depends="postmarketos-base u-boot-pine64 uboot-tools mesa mesa-dri-lima mesa-dri-kmsro"
+depends="postmarketos-base u-boot-pine64 uboot-tools mesa mesa-dri-lima mesa-dri-kmsro gpsd atinout"
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
@@ -22,6 +22,8 @@ source="
 	weston.ini
 	xorg.conf
 	start_weston.sh
+	gpsd_device-hook.sh
+	gpsd.conf
 "
 
 build() {
@@ -33,6 +35,10 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
+	install -D -m755 "$srcdir"/gpsd_device-hook.sh \
+		"$pkgdir"/etc/gpsd/device-hook
+	install -D -m644 "$srcdir"/gpsd.conf \
+		"$pkgdir"/etc/conf.d/gpsd
 }
 
 x11() {
@@ -76,4 +82,6 @@ sha512sums="3e903f578a5112ec171e09e13e331345f0bd8fee935d6658a48cd2d369085c909106
 2aabfeff137e6ecbbb2cf9353d6ae69a0c4fe3f75064164c5e9edde750b035b9d7ab9c10000bb93d1a71cc9b357d469c86d7b9b3ffa0466da8ee229ac59e6c56  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
 f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
-aa11864b9960e94e13b1467e09d8eb528e3d3652bf1fb251c7a040f4d44270403072db8aa906405d4c81fa9d6043fafa8d9ccd1f97031fd96d0dcacc38da8f84  start_weston.sh"
+aa11864b9960e94e13b1467e09d8eb528e3d3652bf1fb251c7a040f4d44270403072db8aa906405d4c81fa9d6043fafa8d9ccd1f97031fd96d0dcacc38da8f84  start_weston.sh
+b4ea8024d00302ef9d026a9c8bc6f8bfcb6c514f9352cdd570a7dd41eab1434f5c1c99f2207967a26d8e90f6e841e9eff244f7e0ce50959abd40604cb1e26835  gpsd_device-hook.sh
+99c011b4fc5aea66d8512d49b434105800b3cff22ce049726227e684b873648fad8a122675230c50d367105727874719ea366cb11ee347130d5a8d693e50ce2d  gpsd.conf"
