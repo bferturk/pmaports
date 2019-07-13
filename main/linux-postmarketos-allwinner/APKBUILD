@@ -4,7 +4,7 @@ _config="config-${_flavor}.${CARCH}"
 pkgname=linux-${_flavor}
 
 pkgver=5.1.0_git20190521
-pkgrel=1
+pkgrel=2
 
 arch="aarch64"
 pkgdesc="Kernel fork with PinePhone Don't be evil patches"
@@ -69,7 +69,7 @@ package() {
                 error "Could not find zImage in $PWD!"
                 return 1
         fi
-	
+
 	cd "$builddir"
 	local _install
 	case "$CARCH" in
@@ -84,5 +84,5 @@ package() {
 }
 
 sha512sums="da8d27d3660864584e2910e62f76da7fae4199d79c0c53a90afb5e344045292baeb3755d50523c702e96f2f0950d0feac93aa262d836731a1037485ab570899d  linux-postmarketos-allwinner-bc1984d747095d285236f0d20f691e421f3bbfc3.tar.gz
-5a04df0f76344b247cab894c8a41b2683e75b08209f1a957948a91f99979080ab07a1695ee266d17a4a85146145cb677ccc63a40722b1ae43ba0a7886f28de92  config-postmarketos-allwinner.aarch64
+7b7f4ea26e2d9da8f920ac08dafd949ec1234b277230c87b333ed44a6a94330cf2dc73877c91f6c45f1e538c72093fef7956af828b57d5c13e96cf55194ec207  config-postmarketos-allwinner.aarch64
 5f2285e4eb262a9429c73599871c3fecbb858a388774bc7cba7631987ed1dc4a14cd7606e8fefc655c5128851fc853132f0a081e3d710c9266739af92f4d37e8  touch-dts.patch"
